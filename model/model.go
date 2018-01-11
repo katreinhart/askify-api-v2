@@ -51,7 +51,7 @@ func init() {
 
 	hostname := os.Getenv("HOST")
 	dbname := os.Getenv("DBNAME")
-	username := os.Getenv("USER")
+	username := os.Getenv("DBUSER")
 	password := os.Getenv("PASSWORD")
 
 	dbString := "host=" + hostname + " user=" + username + " dbname=" + dbname + " sslmode=disable password=" + password
