@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "+TKtBzv23ywvmmqRiGEjUba4YmI=",
+			"path": "github.com/dgrijalva/jwt-go",
+			"revision": "dbeaa9332f19a944acb5736b4456cfcc02140e29",
+			"revisionTime": "2017-10-19T21:57:19Z"
+		},
+		{
 			"checksumSHA1": "OJdetGXp6esUy+J/sLpuiZwlFEw=",
 			"path": "github.com/gorilla/handlers",
 			"revision": "90663712d74cb411cbef281bc1e08c19d1a76145",
@@ -55,6 +61,12 @@
 			"path": "github.com/lib/pq/oid",
 			"revision": "83612a56d3dd153a94a629cd64925371c9adad78",
 			"revisionTime": "2017-11-26T05:04:59Z"
+		},
+		{
+			"checksumSHA1": "oCH3J96RWvO8W4xjix47PModpio=",
+			"path": "golang.org/x/crypto/bcrypt",
+			"revision": "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8",
+			"revisionTime": "2017-11-25T19:00:56Z"
 		}
 	],
 	"rootPath": "github.com/katreinhart/askify-api-v2"
