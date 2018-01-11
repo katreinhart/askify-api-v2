@@ -56,6 +56,55 @@ func CreateUser(b []byte) ([]byte, error) {
 	return js, err
 }
 
+// LoginUser handles database side of login, returns JWT token
+func LoginUser(b []byte) ([]byte, error) {
+	var user, dbUser userModel
+	err := json.Unmarshal(b, &user)
+
+	if err != nil {
+		// handle internal server error
+	}
+
+	db.First(&dbUser, "email = ?", user.Email)
+
+	if dbUser.ID == 0 {
+		// handle user not found error
+		return []byte("{\"message\": \"Something went wrong with JWT.\"}"), errors.New("not found")
+	}
+
+	match := checkPasswordHash(user.Password, dbUser.Password)
+	if !match {
+		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
+	}
+
+	// jwt stuff
+	exp := time.Now().Add(time.Hour * 24).Unix()
+	claim := jwt.StandardClaims{Id: string(dbUser.ID), ExpiresAt: exp}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	secret := []byte(os.Getenv("SECRET"))
+
+	t, err := token.SignedString(secret)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return []byte("Something went wrong with JWT"), err
+	}
+
+	var _user transformedUser
+	_user.Email = user.Email
+	_user.ID = user.ID
+	_user.Token = t
+
+	js, err := json.Marshal(_user)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return []byte("Error parsing user into JSON"), err
+	}
+
+	return js, nil
+}
+
 // user login password helper functions
 // from https://gowebexamples.com/password-hashing/
 func hashPassword(password string) (string, error) {
