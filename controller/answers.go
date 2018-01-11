@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/katreinhart/askify-api-v1/model"
+	"github.com/katreinhart/askify-api-v2/model"
 )
 
 // FetchQuestionAnswers fetches all the answers to a given question
