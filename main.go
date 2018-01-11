@@ -28,6 +28,12 @@ func main() {
 	s.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
 	s.HandleFunc("/", controller.CreateQuestion).Methods("POST")
 	s.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
+	s.HandleFunc("/{id}", controller.UpdateQuestion).Methods("PUT")
+
+	// nested answer routes
+	s.HandleFunc("/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
+	s.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
+	s.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 
 	// Logging handler enables standard HTTP logging
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)

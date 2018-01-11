@@ -80,3 +80,28 @@ func FetchSingleQuestion(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(js)
 }
+
+// UpdateQuestion handles PUT requests to /questions/:id
+func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
+	// get the URL parameter from the http request
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	// get the body from the request
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	js, err := model.UpdateQuestion(id, b)
+
+	// Set the header for the outgoing response
+	w.Header().Set("Content-Type", "application/json")
+
+	// Handle the error
+	if err != nil {
+		// handle error
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}

@@ -18,8 +18,7 @@ func FetchAllQuestions() (js []byte, e error) {
 	}
 
 	for _, item := range questions {
-		answeredBy := ""
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, AnsweredBy: answeredBy})
+		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: item.UserID})
 	}
 
 	js, err := json.Marshal(_questions)
@@ -60,10 +59,40 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 		return []byte("{\"message\": \"Question not found\"}"), err
 	}
 
-	// Later this will be another db call to AnsweredQuestions
-	answeredBy := ""
-	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, AnsweredBy: answeredBy}
+	// Transform the question into the response type
+	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: question.UserID}
 
+	js, err := json.Marshal(_question)
+
+	return js, err
+}
+
+// UpdateQuestion takes in an ID and a byte array, updates the appropriate database row, and returns a JSON formatted response and an error
+func UpdateQuestion(id string, b []byte) ([]byte, error) {
+	// Declare the data types to be used
+	var question, updatedQuestion questionModel
+	var _question transformedQuestion
+	// Fetch the question in question
+	db.First(&question, id)
+
+	// Handle not found error
+	if question.ID == 0 {
+		err := errors.New("Not found")
+		return []byte("{\"message\": \"Question not found\"}"), err
+	}
+
+	// Unmarshal the JSON from the request body into the updatedQuestion format
+	err := json.Unmarshal(b, &updatedQuestion)
+	if err != nil {
+		// hanlde the error
+		err := errors.New("Update error")
+		return []byte("{\"message\": \"Error updating the question\"}"), err
+	}
+
+	db.Model(&question).Update("question", updatedQuestion.Question)
+	db.Model(&question).Update("answered", updatedQuestion.Answered)
+
+	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered}
 	js, err := json.Marshal(_question)
 
 	return js, err

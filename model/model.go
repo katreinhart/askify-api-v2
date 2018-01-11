@@ -24,10 +24,24 @@ type (
 	}
 
 	transformedQuestion struct {
+		ID       uint   `json:"id"`
+		Question string `json:"question"`
+		Answered bool   `json:"answered"`
+		UserID   int    `json:"userid"`
+	}
+
+	answerModel struct {
+		gorm.Model
+		QuestionID int    `json:"questionid"`
+		Answer     string `json:"answer"`
+		UserID     int    `json:"userid"`
+	}
+
+	transformedAnswer struct {
 		ID         uint   `json:"id"`
-		Question   string `json:"question"`
-		Answered   bool   `json:"answered"`
-		AnsweredBy string `json:"answered_by"`
+		QuestionID int    `json:"questionid"`
+		Answer     string `json:"answer"`
+		UserID     int    `json:"userid"`
 	}
 )
 
@@ -50,4 +64,5 @@ func init() {
 	}
 
 	db.AutoMigrate(&questionModel{})
+	db.AutoMigrate(&answerModel{})
 }
