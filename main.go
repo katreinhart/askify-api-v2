@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/katreinhart/askify-api-v1/controller"
+	"github.com/katreinhart/askify-api-v2/controller"
 )
 
 func main() {
