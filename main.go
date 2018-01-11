@@ -35,6 +35,11 @@ func main() {
 	s.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
 	s.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 
+	// u is another subrouter to handle users routes
+	u := r.PathPrefix("/users").Subrouter()
+	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
+	// u.HandleFunc("/login", controller.LoginUser).Methods("POST")
+
 	// Logging handler enables standard HTTP logging
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
 

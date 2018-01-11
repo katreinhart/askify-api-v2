@@ -43,6 +43,18 @@ type (
 		Answer     string `json:"answer"`
 		UserID     int    `json:"userid"`
 	}
+
+	userModel struct {
+		gorm.Model
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	transformedUser struct {
+		ID    uint   `json:"id"`
+		Email string `json:"email"`
+		Token string `json:"token"`
+	}
 )
 
 // init function runs at setup; connects to database
@@ -65,4 +77,5 @@ func init() {
 
 	db.AutoMigrate(&questionModel{})
 	db.AutoMigrate(&answerModel{})
+	db.AutoMigrate(&userModel{})
 }
