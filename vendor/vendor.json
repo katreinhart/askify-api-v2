@@ -67,6 +67,12 @@
 			"path": "golang.org/x/crypto/bcrypt",
 			"revision": "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8",
 			"revisionTime": "2017-11-25T19:00:56Z"
+		},
+		{
+			"checksumSHA1": "oVPHWesOmZ02vLq2fglGvf+AMgk=",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8",
+			"revisionTime": "2017-11-25T19:00:56Z"
 		}
 	],
 	"rootPath": "github.com/katreinhart/askify-api-v2"
