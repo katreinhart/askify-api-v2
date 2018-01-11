@@ -1,6 +1,6 @@
 # Askify 2.0 API 
-a gSchool Question Queue App
-written in Golang by [katreinhart](kat.reinhart@gmail.com)
+a gSchool Question Queue API
+written in Go by [katreinhart](kat.reinhart@gmail.com)
 
 ## Askify is a question queue built for students at Galvanize.  
 This API is my independent study project for WDI Q4 and is implemented in Go using the Gorilla toolkit and no web framework (because Go doesn't need a web framework!)
@@ -22,4 +22,10 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ```/questions/{id}/answers/{aid}``` GET
 
 ### Work In Progress
-This is a work in progress (January 2018). 
+This is a work in progress as of January 2018. 
+
+#### Backlog
+* Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes. 
+* Implement Delete functionality? 
+* Implement ```/users/{id}/questions``` GET route to see all users' questions
+
