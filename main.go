@@ -27,6 +27,7 @@ func main() {
 	s := r.PathPrefix("/questions").Subrouter()
 	s.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
 	s.HandleFunc("/", controller.CreateQuestion).Methods("POST")
+	s.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
 
 	// Logging handler enables standard HTTP logging
 	loggedRouter := handlers.LoggingHandler(os.Stdout, r)

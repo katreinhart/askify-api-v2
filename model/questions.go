@@ -46,3 +46,25 @@ func CreateQuestion(b []byte) (js []byte, e error) {
 	// Return a success message (maybe edit later to return the question?)
 	return []byte("{\"message\": \"Question successfully added\"}"), nil
 }
+
+// FetchSingleQuestion takes in an ID and returns a JSON formatted question and an error
+func FetchSingleQuestion(id string) ([]byte, error) {
+	// Declare the data type that will hold the data
+	var question questionModel
+	// Fetch the question from the DB
+	db.First(&question, id)
+
+	// This is the error handling for GORM
+	if question.ID == 0 {
+		err := errors.New("Not found")
+		return []byte("{\"message\": \"Question not found\"}"), err
+	}
+
+	// Later this will be another db call to AnsweredQuestions
+	answeredBy := ""
+	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, AnsweredBy: answeredBy}
+
+	js, err := json.Marshal(_question)
+
+	return js, err
+}

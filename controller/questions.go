@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v1/model"
 )
 
@@ -55,6 +56,27 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send the success response
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}
+
+// FetchSingleQuestion fetches single question as specified by URL parameter
+func FetchSingleQuestion(w http.ResponseWriter, r *http.Request) {
+	// get the URL parameter from the http request
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	// fetch the question and an error if there is one
+	js, err := model.FetchSingleQuestion(id)
+
+	// Set the header for the outgoing response
+	w.Header().Set("Content-Type", "application/json")
+
+	// Handle the error
+	if err != nil {
+		// handle it
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(js)
 }
