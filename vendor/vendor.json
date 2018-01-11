@@ -31,12 +31,6 @@
 			"path": "github.com/joho/godotenv",
 			"revision": "06e67b5ef3bef2e1a8696e1c04b94b44cbc5d9a5",
 			"revisionTime": "2017-12-22T23:35:39Z"
-		},
-		{
-			"path": "github.com/katreinhart/askify-api-v2",
-			"revision": "11bcc119e8510635661368d9f801219b95875a89",
-			"revisionTime": "2018-01-11T21:23:40Z",
-			"tree": true
 		}
 	],
 	"rootPath": "github.com/katreinhart/askify-api-v2"
