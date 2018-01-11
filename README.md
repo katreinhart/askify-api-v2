@@ -13,6 +13,7 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 1. Create a local postgres database called askify_v2_dev. 
 1. Change the name of ```.env.sample``` to ```.env```
 1. ```go run main.go``` will run the server locally, and you can test API endpoints from Postman or similar. 
+1. ```go build``` will compile the project into an executable binary. 
 
 ### Routes Implemented 
 * ```/questions/``` GET, POST

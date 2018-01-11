@@ -92,7 +92,7 @@ func LoginUser(b []byte) ([]byte, error) {
 
 	var _user transformedUser
 	_user.Email = user.Email
-	_user.ID = user.ID
+	_user.ID = dbUser.ID
 	_user.Token = t
 
 	js, err := json.Marshal(_user)
