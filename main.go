@@ -30,7 +30,7 @@ func main() {
 	api := r.PathPrefix("/api/questions").Subrouter()
 
 	// This isn't particularly RESTful but maybe it works
-	api.HandleFunc("/open", controller.FetchAllOpenQuestions).Methods("GET")
+	api.HandleFunc("/queue", controller.FetchQueue).Methods("GET")
 
 	api.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
 	api.HandleFunc("/", controller.CreateQuestion).Methods("POST")
@@ -42,8 +42,8 @@ func main() {
 	api.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
 	api.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 
-	// u is another subrouter to handle users routes
-	u := r.PathPrefix("/users").Subrouter()
+	// u is another subrouter to handle auth routes
+	u := r.PathPrefix("/auth").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	u.HandleFunc("/login", controller.LoginUser).Methods("POST")
 

@@ -21,9 +21,12 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ```/questions/{id}``` GET, PUT
 * ```/questions/{id}/answers``` GET, POST
 * ```/questions/{id}/answers/{aid}``` GET
+* ```/questions/open``` GET <-- returns all unanswered questions
 
-### Auth
-* Auth routes are /users/register and /users/login. 
+### Authentication & Authorization
+* Authentication routes begin with ```/auth```
+* Routes are ```/register``` and ```/login```
+* Both auth routes require an "email" and "password" field.
 * Auth routes return a JWT token.
 * API routes begin with /api/ and are JWT-token protected.
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 

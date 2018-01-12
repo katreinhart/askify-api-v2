@@ -107,11 +107,11 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func FetchAllOpenQuestions(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchAllOpenQuestions()
+// FetchQueue gets all open questions in order that they were posted.
+func FetchQueue(w http.ResponseWriter, r *http.Request) {
+	js, err := model.FetchQueue()
 
 	w.Header().Set("Content-Type", "application/json")
-
 	if err != nil {
 		if err.Error() == "Not found" {
 			w.WriteHeader(http.StatusNotFound)

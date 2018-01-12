@@ -99,13 +99,12 @@ func UpdateQuestion(id string, b []byte) ([]byte, error) {
 	return js, err
 }
 
-// FetchAllOpenQuestions takes no parameters and responds with a JSON of all the questions in the db and an error.
-func FetchAllOpenQuestions() (js []byte, e error) {
-
+// FetchQueue will return all unanswered questions in the proper order
+func FetchQueue() ([]byte, error) {
 	var questions []questionModel
 	var _questions []transformedQuestion
 
-	db.Find(&questions, "answered = ?", false)
+	db.Order("created_at asc").Find(&questions, "answered = ?", false)
 
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
