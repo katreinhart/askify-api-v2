@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"os"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
+	"github.com/codegangsta/negroni"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/controller"
@@ -24,27 +27,44 @@ func main() {
 	r.HandleFunc("/", homeHandler)
 
 	// s is a subrouter to handle question routes
-	s := r.PathPrefix("/questions").Subrouter()
-	s.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
-	s.HandleFunc("/", controller.CreateQuestion).Methods("POST")
-	s.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
-	s.HandleFunc("/{id}", controller.UpdateQuestion).Methods("PUT")
+	api := r.PathPrefix("/api/questions").Subrouter()
+	api.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
+	api.HandleFunc("/", controller.CreateQuestion).Methods("POST")
+	api.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
+	api.HandleFunc("/{id}", controller.UpdateQuestion).Methods("PUT")
 
 	// nested answer routes
-	s.HandleFunc("/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
-	s.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
-	s.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
+	api.HandleFunc("/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
+	api.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
+	api.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 
 	// u is another subrouter to handle users routes
 	u := r.PathPrefix("/users").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	u.HandleFunc("/login", controller.LoginUser).Methods("POST")
 
-	// Logging handler enables standard HTTP logging
-	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+	// JWT Middleware handles authorization configuration
+	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("SECRET")), nil
+		},
+		SigningMethod: jwt.SigningMethodHS256,
+	})
 
-	// Recovery handler is a HOF that wraps a router enbling recovery from a panic
-	http.ListenAndServe(":"+port, handlers.RecoveryHandler()(loggedRouter))
+	// muxRouter uses Negroni handles the middleware for authorization
+	muxRouter := http.NewServeMux()
+	muxRouter.Handle("/", r)
+	muxRouter.Handle("/api/", negroni.New(
+		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
+		negroni.Wrap(api),
+	))
+
+	// Negroni handles the middleware chaining with next
+	n := negroni.Classic()
+	n.UseHandler(muxRouter)
+
+	// listen and serve!
+	http.ListenAndServe(":"+port, handlers.RecoveryHandler()(n))
 }
 
 // homeHandler handles the / route
