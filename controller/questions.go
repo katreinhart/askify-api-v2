@@ -10,6 +10,7 @@ import (
 
 // FetchAllQuestions fetch all the data from the model and handle responding
 func FetchAllQuestions(w http.ResponseWriter, r *http.Request) {
+
 	js, err := model.FetchAllQuestions()
 
 	w.Header().Set("Content-Type", "application/json")
@@ -100,6 +101,25 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	// Handle the error
 	if err != nil {
 		// handle error
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}
+
+func FetchAllOpenQuestions(w http.ResponseWriter, r *http.Request) {
+	js, err := model.FetchAllOpenQuestions()
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err != nil {
+		if err.Error() == "Not found" {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(js)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)

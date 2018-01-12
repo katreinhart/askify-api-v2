@@ -7,6 +7,7 @@ import (
 
 // FetchAllQuestions takes no parameters and responds with a JSON of all the questions in the db and an error.
 func FetchAllQuestions() (js []byte, e error) {
+
 	var questions []questionModel
 	var _questions []transformedQuestion
 
@@ -94,6 +95,28 @@ func UpdateQuestion(id string, b []byte) ([]byte, error) {
 
 	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered}
 	js, err := json.Marshal(_question)
+
+	return js, err
+}
+
+// FetchAllOpenQuestions takes no parameters and responds with a JSON of all the questions in the db and an error.
+func FetchAllOpenQuestions() (js []byte, e error) {
+
+	var questions []questionModel
+	var _questions []transformedQuestion
+
+	db.Find(&questions, "answered = ?", false)
+
+	if len(questions) <= 0 {
+		err := errors.New("Not found")
+		return []byte(""), err
+	}
+
+	for _, item := range questions {
+		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: item.UserID})
+	}
+
+	js, err := json.Marshal(_questions)
 
 	return js, err
 }

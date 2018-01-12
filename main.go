@@ -28,6 +28,10 @@ func main() {
 
 	// s is a subrouter to handle question routes
 	api := r.PathPrefix("/api/questions").Subrouter()
+
+	// This isn't particularly RESTful but maybe it works
+	api.HandleFunc("/open", controller.FetchAllOpenQuestions).Methods("GET")
+
 	api.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
 	api.HandleFunc("/", controller.CreateQuestion).Methods("POST")
 	api.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
