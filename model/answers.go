@@ -26,16 +26,25 @@ func FetchQuestionAnswers(id string) ([]byte, error) {
 }
 
 // CreateAnswer takes the data from the controller and puts it into the database.
-func CreateAnswer(b []byte) ([]byte, error) {
-	var answer answerModel
+func CreateAnswer(qid int, b []byte) ([]byte, error) {
+	var answer answerModelInput
+	var _answer answerModel
+
+	var question questionModel
 
 	err := json.Unmarshal(b, &answer)
+
+	_answer = answerModel{QuestionID: qid, Answer: answer.Answer, UserID: answer.UserID}
 
 	if err != nil {
 		return []byte("{\"message\": \"Error saving to database\"}"), err
 	}
 
-	db.Save(&answer)
+	// find the associated question and mark it answered
+	db.Model(&question).Update("answered", true)
+
+	// save the answer in the DB
+	db.Save(&_answer)
 
 	return []byte("{\"message\": \"Answer created successfully\"}"), nil
 }

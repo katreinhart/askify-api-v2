@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/model"
@@ -30,7 +31,10 @@ func CreateAnswer(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.CreateAnswer(b)
+	vars := mux.Vars(r)
+	qid, _ := strconv.Atoi(vars["id"])
+
+	js, err := model.CreateAnswer(qid, b)
 
 	w.Header().Set("Content-Type", "application/json")
 

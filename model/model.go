@@ -30,6 +30,11 @@ type (
 		UserID   int    `json:"userid"`
 	}
 
+	answerModelInput struct {
+		Answer string `json:"answer"`
+		UserID int    `json:"userid"`
+	}
+
 	answerModel struct {
 		gorm.Model
 		QuestionID int    `json:"questionid"`
