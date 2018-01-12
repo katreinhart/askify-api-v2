@@ -108,7 +108,7 @@ func LoginUser(b []byte) ([]byte, error) {
 // user login password helper functions
 // from https://gowebexamples.com/password-hashing/
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	return string(bytes), err
 }
 
