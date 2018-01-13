@@ -25,7 +25,7 @@ func main() {
 
 	// allow CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"localhost", "https://askify.surge.sh"},
+		AllowedOrigins: []string{"http://localhost:8080", "https://localhost:3000"},
 	})
 
 	// set up router
