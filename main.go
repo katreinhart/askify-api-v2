@@ -25,7 +25,7 @@ func main() {
 
 	// allow CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:8080", "https://localhost:3000"},
+		AllowedOrigins: []string{"https://localhost:8080", "http://localhost:3000"},
 	})
 
 	// set up router
