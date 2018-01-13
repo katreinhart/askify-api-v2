@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/controller"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -21,6 +22,11 @@ func main() {
 	} else {
 		port = "8080"
 	}
+
+	// allow CORS
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"localhost", "https://askify.surge.sh"},
+	})
 
 	// set up router
 	r := mux.NewRouter().StrictSlash(true)
@@ -66,6 +72,7 @@ func main() {
 	// Negroni handles the middleware chaining with next
 	n := negroni.Classic()
 	n.UseHandler(muxRouter)
+	n.Use(c)
 
 	// listen and serve!
 	http.ListenAndServe(":"+port, handlers.RecoveryHandler()(n))
