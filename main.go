@@ -25,7 +25,7 @@ func main() {
 
 	// allow CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "*"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://askify-api.herokuapp.com", "*"},
 		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization", "Authorization Mode"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS", "DELETE"},
 		AllowCredentials: true,
