@@ -23,11 +23,14 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ```/questions/{id}/answers/{aid}``` GET
 * ```/questions/open``` GET <-- returns all unanswered questions
 * ```/user ``` GET - returns information about the user based on contents of JWT
+* ```/users/{id}/questions``` returns all quetions a user has asked
+* ```/archive``` returns all answered question with nested answers
 
 ### Authentication & Authorization
 * Authentication routes begin with ```/auth```
 * Routes are ```/register``` and ```/login```
 * Both auth routes require an "email" and "password" field.
+* Auth register route also takes "fname" and "cohort" fields
 * Auth routes return a JWT token.
 * API routes begin with /api/ and are JWT-token protected.
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 
@@ -35,9 +38,11 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 #### Backlog
 * ~~Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes.~~
 * ~~Update user registration to take fname and cohort ID~~
-* Implement ```/users/{id}/questions``` GET route to see all users' questions
-* Implement ```/archive``` GET route to get all answered questions with nested answers.
+* ~~Implement ```/users/{id}/questions``` GET route to see all users' questions~~
+* ~~Implement ```/archive``` GET route to get all answered questions with nested answers.~~
 * Implement Delete functionality? 
+* POST to /questions should not require "userid" field = that should be parsed from token.
+* Does deeply nested archive route return user names? 
 
 ### Work In Progress
 This is a work in progress as of January 2018.
