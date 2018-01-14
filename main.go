@@ -75,10 +75,9 @@ func main() {
 
 	// Negroni handles the middleware chaining with next
 	n := negroni.Classic()
-	n.UseHandler(muxRouter)
-
 	// Use CORS
 	n.Use(c)
+	n.UseHandler(muxRouter)
 
 	// listen and serve!
 	http.ListenAndServe(":"+port, handlers.RecoveryHandler()(n))
