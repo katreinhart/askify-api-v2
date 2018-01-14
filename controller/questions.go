@@ -126,8 +126,9 @@ func FetchQueue(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+// FetchArchive handles request for deeply nested archive object and responds
 func FetchArchive(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchQueue()
+	js, err := model.FetchArchive()
 
 	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
@@ -138,6 +139,7 @@ func FetchArchive(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Something went wrong"))
 		}
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

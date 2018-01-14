@@ -120,7 +120,7 @@ func FetchQueue() ([]byte, error) {
 	return js, err
 }
 
-//  FetchArchive will return a nested object with all answered questions and their answers.
+// FetchArchive will return a nested object with all answered questions and their answers.
 func FetchArchive() ([]byte, error) {
 	var questions []questionModel
 	var _questions []archiveQuestion
@@ -133,8 +133,22 @@ func FetchArchive() ([]byte, error) {
 	}
 
 	for _, q := range questions {
-
+		var answers []answerModel
+		var _answers []archiveAnswer
+		db.Find(&answers, "question_id = ?", q.ID)
+		for _, a := range answers {
+			var user userModel
+			db.First(&user, "id = ?", a.UserID)
+			_answers = append(_answers, archiveAnswer{ID: a.ID, QuestionID: int(q.ID), Answer: a.Answer, UserID: a.UserID, UserName: user.Fname})
+		}
+		var u userModel
+		db.First(&u, "id = ?", q.UserID)
+		_questions = append(_questions, archiveQuestion{ID: q.ID, Question: q.Question, UserID: q.UserID, UserName: u.Fname, Answers: _answers})
 	}
+
+	js, err := json.Marshal(_questions)
+
+	return js, err
 }
 
 // FetchUserQuestions returns all questions a user has asked
