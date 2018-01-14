@@ -2,11 +2,10 @@ package controller
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
-	"os"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/model"
 )
 
@@ -51,35 +50,68 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
+// FetchUserInfo gets the information about the current user (by token) and returns it in JSON format.
 func FetchUserInfo(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user")
 	tok := user.(*jwt.Token)
 
+	// no token present, so this is an unauthorized request.
 	if tok == nil {
-		panic("token not found")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("{\"message\": \"Unauthorized\"}"))
+		return
 	}
 
-	fmt.Fprintf(os.Stderr, "Header:\n%v\n", tok.Header)
-	fmt.Fprintf(os.Stderr, "Claims:\n%v\n", tok.Claims)
+	// get claims from token
 	claims := tok.Claims.(jwt.MapClaims)
-	fmt.Fprintf(os.Stderr, "UID:\n%v\n", claims["uid"])
+	// parse uid out of claims.
 	uid, ok := claims["uid"].(float64)
 
+	// Error parsing uid from token.
 	if !ok {
-		panic("what the fuck")
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("{\"message\": \"Could not parse token.\"}"))
 	}
+
+	// get the user from the model
 	js, err := model.FetchMyInfo(uid)
 
+	// prepare to send response
 	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
 		if err.Error() == "Not found" {
 			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
+			w.Write([]byte("{\"message\": \"User not found\"}"))
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong"))
+			w.Write([]byte("{\"message\": \"Something went wrong.\"}"))
 		}
+		return
+	}
+
+	// send successful response
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}
+
+// FetchUserQuestions handles user question route
+func FetchUserQuestions(w http.ResponseWriter, r *http.Request) {
+	// get the URL parameter from the http request
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	// fetch the question and an error if there is one
+	js, err := model.FetchUserQuestions(id)
+
+	// Set the header for the outgoing response
+	w.Header().Set("Content-Type", "application/json")
+
+	// Handle the error
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("{\"message\": \"No questions found for user\"}"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

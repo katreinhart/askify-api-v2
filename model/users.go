@@ -122,8 +122,8 @@ func FetchMyInfo(uid float64) ([]byte, error) {
 // user login password helper functions
 // from https://gowebexamples.com/password-hashing/
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	return string(bytes), err
+	b, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(b), err
 }
 
 func checkPasswordHash(password, hash string) bool {
@@ -133,19 +133,17 @@ func checkPasswordHash(password, hash string) bool {
 
 // my own JWT helper function
 func createAndSignJWT(user userModel) (string, error) {
-	// jwt stuff
-	// create the token
-	exp := time.Now().Add(time.Hour * 24).Unix()
-	claim := CustomClaims{
+	// create the expiration time, build claim, create and sign token
+	e := time.Now().Add(time.Hour * 24).Unix()
+	c := CustomClaims{
 		user.ID,
 		user.Admin,
 		jwt.StandardClaims{
-			ExpiresAt: exp,
+			ExpiresAt: e,
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	secret := []byte(os.Getenv("SECRET"))
-
 	t, err := token.SignedString(secret)
 
 	return t, err

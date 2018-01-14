@@ -40,10 +40,12 @@ func main() {
 	api := r.PathPrefix("/api").Subrouter()
 
 	// This isn't particularly RESTful but it works
-	api.HandleFunc("/queue", controller.FetchQueue).Methods("GET", "OPTIONS")
+	api.HandleFunc("/queue", controller.FetchQueue).Methods("GET")
+	api.HandleFunc("/archive", controller.FetchArchive).Methods("GET")
 
 	// get user info based on token
 	api.HandleFunc("/user", controller.FetchUserInfo).Methods("GET")
+	api.HandleFunc("/user/{id}/questions", controller.FetchUserQuestions).Methods("GET")
 
 	// questions routes
 	api.HandleFunc("/questions/", controller.FetchAllQuestions).Methods("GET")

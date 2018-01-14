@@ -31,6 +31,14 @@ type (
 		UserID   int    `json:"userid"`
 	}
 
+	archiveQuestion struct {
+		ID       uint            `json:"id"`
+		Question string          `json:"question"`
+		UserID   int             `json:"userid"`
+		UserName string          `json:"fname"`
+		Answers  []archiveAnswer `json:"answers"`
+	}
+
 	answerModelInput struct {
 		Answer string `json:"answer"`
 		UserID int    `json:"userid"`
@@ -48,6 +56,14 @@ type (
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
 		UserID     int    `json:"userid"`
+	}
+
+	archiveAnswer struct {
+		ID         uint   `json:"id"`
+		QuestionID int    `json:"questionid"`
+		Answer     string `json:"answer"`
+		UserID     int    `json:"uid"`
+		UserName   string `json:"username"`
 	}
 
 	userModel struct {
