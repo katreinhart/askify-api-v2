@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -36,10 +37,17 @@ func CreateUser(b []byte) ([]byte, error) {
 	user.Password = hash
 
 	db.Save(&user)
+	db.First(&dbUser, "email = ?", user.Email)
 
 	// create the token
 	exp := time.Now().Add(time.Hour * 24).Unix()
-	claim := jwt.StandardClaims{Id: string(dbUser.ID), ExpiresAt: exp}
+	claim := CustomClaims{
+		dbUser.ID,
+		dbUser.Admin,
+		jwt.StandardClaims{
+			ExpiresAt: exp,
+		},
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	secret := []byte(os.Getenv("SECRET"))
 
@@ -47,7 +55,7 @@ func CreateUser(b []byte) ([]byte, error) {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return []byte("{\"message\": \"Something went wrong with JWT.\"}"), err
+		return []byte("Something went wrong with JWT"), err
 	}
 
 	_user := transformedUser{ID: user.ID, Email: user.Email, Token: t}
@@ -78,8 +86,15 @@ func LoginUser(b []byte) ([]byte, error) {
 	}
 
 	// jwt stuff
+	// create the token
 	exp := time.Now().Add(time.Hour * 24).Unix()
-	claim := jwt.StandardClaims{Id: string(dbUser.ID), ExpiresAt: exp}
+	claim := CustomClaims{
+		dbUser.ID,
+		dbUser.Admin,
+		jwt.StandardClaims{
+			ExpiresAt: exp,
+		},
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	secret := []byte(os.Getenv("SECRET"))
 
@@ -103,6 +118,23 @@ func LoginUser(b []byte) ([]byte, error) {
 	}
 
 	return js, nil
+}
+
+// FetchMyInfo finds the given user in the db and returns info about them
+func FetchMyInfo(uid float64) ([]byte, error) {
+	var user userModel
+	var _user listedUser
+	struid := strconv.FormatFloat(uid, 'f', -1, 64)
+
+	db.First(&user, "id = ?", struid)
+	if user.ID == 0 {
+		return []byte(""), errors.New("User not found")
+	}
+
+	_user = listedUser{ID: user.ID, Email: user.Email, Admin: user.Admin}
+
+	js, err := json.Marshal(_user)
+	return js, err
 }
 
 // user login password helper functions

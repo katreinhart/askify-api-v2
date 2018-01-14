@@ -37,20 +37,24 @@ func main() {
 	r.HandleFunc("/", homeHandler)
 
 	// s is a subrouter to handle question routes
-	api := r.PathPrefix("/api/questions").Subrouter()
+	api := r.PathPrefix("/api").Subrouter()
 
-	// This isn't particularly RESTful but maybe it works
+	// This isn't particularly RESTful but it works
 	api.HandleFunc("/queue", controller.FetchQueue).Methods("GET", "OPTIONS")
 
-	api.HandleFunc("/", controller.FetchAllQuestions).Methods("GET")
-	api.HandleFunc("/", controller.CreateQuestion).Methods("POST")
-	api.HandleFunc("/{id}", controller.FetchSingleQuestion).Methods("GET")
-	api.HandleFunc("/{id}", controller.UpdateQuestion).Methods("PUT")
+	// get user info based on token
+	api.HandleFunc("/user", controller.FetchUserInfo).Methods("GET")
+
+	// questions routes
+	api.HandleFunc("/questions/", controller.FetchAllQuestions).Methods("GET")
+	api.HandleFunc("/questions/", controller.CreateQuestion).Methods("POST")
+	api.HandleFunc("/questions/{id}", controller.FetchSingleQuestion).Methods("GET")
+	api.HandleFunc("/questions/{id}", controller.UpdateQuestion).Methods("PUT")
 
 	// nested answer routes
-	api.HandleFunc("/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
-	api.HandleFunc("/{id}/answers", controller.CreateAnswer).Methods("POST")
-	api.HandleFunc("/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
+	api.HandleFunc("/questions/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
+	api.HandleFunc("/questions/{id}/answers", controller.CreateAnswer).Methods("POST")
+	api.HandleFunc("/questions/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 
 	// u is another subrouter to handle auth routes
 	u := r.PathPrefix("/auth").Subrouter()

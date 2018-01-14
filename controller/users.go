@@ -2,8 +2,11 @@ package controller
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
+	"os"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/katreinhart/askify-api-v2/model"
 )
 
@@ -42,6 +45,41 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(js)
 		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(js)
+}
+
+func FetchUserInfo(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user")
+	tok := user.(*jwt.Token)
+
+	if tok == nil {
+		panic("token not found")
+	}
+
+	fmt.Fprintf(os.Stderr, "Header:\n%v\n", tok.Header)
+	fmt.Fprintf(os.Stderr, "Claims:\n%v\n", tok.Claims)
+	claims := tok.Claims.(jwt.MapClaims)
+	fmt.Fprintf(os.Stderr, "UID:\n%v\n", claims["uid"])
+	uid, ok := claims["uid"].(float64)
+
+	if !ok {
+		panic("what the fuck")
+	}
+	js, err := model.FetchMyInfo(uid)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err != nil {
+		if err.Error() == "Not found" {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write(js)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Something went wrong"))
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)

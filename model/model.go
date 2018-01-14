@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 
@@ -53,12 +54,25 @@ type (
 		gorm.Model
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Admin    bool   `json:"admin"`
 	}
 
 	transformedUser struct {
 		ID    uint   `json:"id"`
 		Email string `json:"email"`
 		Token string `json:"token"`
+	}
+
+	listedUser struct {
+		ID    uint   `json:"id"`
+		Email string `json:"email"`
+		Admin bool   `json:"admin"`
+	}
+
+	CustomClaims struct {
+		UID uint `json:"uid"`
+		Rol bool `json:"rol"`
+		jwt.StandardClaims
 	}
 )
 
