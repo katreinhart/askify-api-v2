@@ -9,7 +9,7 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 1. You will need [Go](http://golang.org) installed to run this project. 
 1. Fork and clone the repository to your local machine into your ```$GOPATH``` (usually /Users/(your user name)/go/).
 1. Navigate into the project folder and run ```go install``` to install dependencies. 
-1. You will need a local postgres server running - [here](https://launchschool.com/blog/how-to-install-postgresql-on-a-mac) is a good overview on how to do that.
+1. You will need a local postgres server running - [here](https://launchschool.com/blog/how-to-install-postgresql-on-a-mac) is a good overview on how to do that on MacOS.
 1. Create a local postgres database called askify_v2_dev. 
 1. Change the name of ```.env.sample``` to ```.env``` and edit the file with your credentials or secret key as necessary
 1. ```go run main.go``` will run the server locally, and you can test API endpoints from Postman or similar. 
@@ -22,6 +22,7 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ```/questions/{id}/answers``` GET, POST
 * ```/questions/{id}/answers/{aid}``` GET
 * ```/questions/open``` GET <-- returns all unanswered questions
+* ```/user ``` GET - returns information about the user based on contents of JWT
 
 ### Authentication & Authorization
 * Authentication routes begin with ```/auth```
@@ -31,11 +32,13 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * API routes begin with /api/ and are JWT-token protected.
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 
 
-### Work In Progress
-This is a work in progress as of January 2018. 
-
 #### Backlog
 * ~~Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes.~~
-* Implement Delete functionality? 
+* Update user registration to take fname and cohort ID 
 * Implement ```/users/{id}/questions``` GET route to see all users' questions
+* Implement ```/archive``` GET route to get all answered questions with nested answers.
+* Implement Delete functionality? 
+
+### Work In Progress
+This is a work in progress as of January 2018.
 
