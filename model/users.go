@@ -36,28 +36,20 @@ func CreateUser(b []byte) ([]byte, error) {
 
 	user.Password = hash
 
+	// save the user in the DB
 	db.Save(&user)
+	// Get the user back from the database so you have the ID
 	db.First(&dbUser, "email = ?", user.Email)
 
-	// create the token
-	exp := time.Now().Add(time.Hour * 24).Unix()
-	claim := CustomClaims{
-		dbUser.ID,
-		dbUser.Admin,
-		jwt.StandardClaims{
-			ExpiresAt: exp,
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	secret := []byte(os.Getenv("SECRET"))
-
-	t, err := token.SignedString(secret)
-
+	// create and sign the jwt
+	t, err := createAndSignJWT(dbUser)
+	// Handle error in JWT creation/signing
 	if err != nil {
 		fmt.Println(err.Error())
 		return []byte("Something went wrong with JWT"), err
 	}
 
+	// create transmissin friendly version of user struct and marshal it into JSON
 	_user := transformedUser{ID: user.ID, Email: user.Email, Token: t}
 	js, err := json.Marshal(_user)
 
@@ -85,31 +77,21 @@ func LoginUser(b []byte) ([]byte, error) {
 		return []byte("{\"message\": \"Check your inputs and try again.\"}"), errors.New("Unauthorized")
 	}
 
-	// jwt stuff
-	// create the token
-	exp := time.Now().Add(time.Hour * 24).Unix()
-	claim := CustomClaims{
-		dbUser.ID,
-		dbUser.Admin,
-		jwt.StandardClaims{
-			ExpiresAt: exp,
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-	secret := []byte(os.Getenv("SECRET"))
-
-	t, err := token.SignedString(secret)
-
+	// Create and sign JWT
+	t, err := createAndSignJWT(dbUser)
+	// Handle error in JWT creation/signing
 	if err != nil {
 		fmt.Println(err.Error())
 		return []byte("Something went wrong with JWT"), err
 	}
 
+	// create transmission friendly user struct
 	var _user transformedUser
 	_user.Email = user.Email
 	_user.ID = dbUser.ID
 	_user.Token = t
 
+	// marshal user into JSON
 	js, err := json.Marshal(_user)
 
 	if err != nil {
@@ -147,4 +129,24 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+// my own JWT helper function
+func createAndSignJWT(user userModel) (string, error) {
+	// jwt stuff
+	// create the token
+	exp := time.Now().Add(time.Hour * 24).Unix()
+	claim := CustomClaims{
+		user.ID,
+		user.Admin,
+		jwt.StandardClaims{
+			ExpiresAt: exp,
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	secret := []byte(os.Getenv("SECRET"))
+
+	t, err := token.SignedString(secret)
+
+	return t, err
 }
