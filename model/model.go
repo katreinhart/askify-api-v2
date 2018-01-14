@@ -53,6 +53,8 @@ type (
 	userModel struct {
 		gorm.Model
 		Email    string `json:"email"`
+		Fname    string `json:"fname"`
+		Cohort   string `json:"cohort"`
 		Password string `json:"password"`
 		Admin    bool   `json:"admin"`
 	}
@@ -64,9 +66,11 @@ type (
 	}
 
 	listedUser struct {
-		ID    uint   `json:"id"`
-		Email string `json:"email"`
-		Admin bool   `json:"admin"`
+		ID     uint   `json:"id"`
+		Fname  string `json:"fname"`
+		Cohort string `json:"cohort"`
+		Email  string `json:"email"`
+		Admin  bool   `json:"admin"`
 	}
 
 	CustomClaims struct {

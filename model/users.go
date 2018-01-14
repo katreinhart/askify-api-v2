@@ -113,7 +113,7 @@ func FetchMyInfo(uid float64) ([]byte, error) {
 		return []byte(""), errors.New("User not found")
 	}
 
-	_user = listedUser{ID: user.ID, Email: user.Email, Admin: user.Admin}
+	_user = listedUser{ID: user.ID, Email: user.Email, Fname: user.Fname, Admin: user.Admin, Cohort: user.Cohort}
 
 	js, err := json.Marshal(_user)
 	return js, err
