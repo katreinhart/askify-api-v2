@@ -34,11 +34,10 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 
 #### Backlog
 * ~~Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes.~~
-* Update user registration to take fname and cohort ID 
+* ~~Update user registration to take fname and cohort ID~~
 * Implement ```/users/{id}/questions``` GET route to see all users' questions
 * Implement ```/archive``` GET route to get all answered questions with nested answers.
 * Implement Delete functionality? 
 
 ### Work In Progress
 This is a work in progress as of January 2018.
-
