@@ -23,10 +23,10 @@ func main() {
 		port = "8080"
 	}
 
-	// allow CORS
+	// CORS middleware setup
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://askify-api.herokuapp.com", "*"},
-		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization", "Authorization Mode"},
+		AllowedOrigins:   []string{"*"},
+		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS", "DELETE"},
 		AllowCredentials: true,
 		Debug:            true,
@@ -76,6 +76,8 @@ func main() {
 	// Negroni handles the middleware chaining with next
 	n := negroni.Classic()
 	n.UseHandler(muxRouter)
+
+	// Use CORS
 	n.Use(c)
 
 	// listen and serve!
