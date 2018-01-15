@@ -16,12 +16,7 @@ func FetchQuestionAnswers(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.FetchQuestionAnswers(qid)
 
-	w.Header().Set("Content-Type", "application/json")
-	if err != nil {
-		// handle error
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // CreateAnswer posts an answer to a question
@@ -36,14 +31,7 @@ func CreateAnswer(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.CreateAnswer(qid, b)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		// handle error
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchSingleAnswer gets a single answer to a single question.
@@ -54,20 +42,5 @@ func FetchSingleAnswer(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.FetchSingleAnswer(qid, aid)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		// handle the error
-		if err.Error() == "Answer not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
-			return
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(js)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }

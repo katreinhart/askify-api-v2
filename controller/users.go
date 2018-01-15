@@ -18,16 +18,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.CreateUser(b)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(js)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // LoginUser handles login of existing user via POST to /users/login
@@ -38,16 +29,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.LoginUser(b)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write(js)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchUserInfo gets the information about the current user (by token) and returns it in JSON format.
@@ -76,23 +58,7 @@ func FetchUserInfo(w http.ResponseWriter, r *http.Request) {
 	// get the user from the model
 	js, err := model.FetchMyInfo(uid)
 
-	// prepare to send response
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("{\"message\": \"User not found\"}"))
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("{\"message\": \"Something went wrong.\"}"))
-		}
-		return
-	}
-
-	// send successful response
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchUserQuestions handles user question route
@@ -104,16 +70,5 @@ func FetchUserQuestions(w http.ResponseWriter, r *http.Request) {
 	// fetch the question and an error if there is one
 	js, err := model.FetchUserQuestions(id)
 
-	// Set the header for the outgoing response
-	w.Header().Set("Content-Type", "application/json")
-
-	// Handle the error
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("{\"message\": \"No questions found for user\"}"))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }

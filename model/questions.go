@@ -125,29 +125,42 @@ func FetchArchive() ([]byte, error) {
 	var questions []questionModel
 	var _questions []archiveQuestion
 
+	// Get all answered questions from the database.
+	// Currently sorting ascending; is this right? 🤷🏼‍♀️
+
 	db.Order("created_at asc").Find(&questions, "answered = ?", true)
 
+	// No questions found? return not found error
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
 		return []byte(""), err
 	}
 
+	// go through each question and put its answers into an []archiveAnswer
 	for _, q := range questions {
 		var answers []answerModel
 		var _answers []archiveAnswer
+
+		// Get answers from the database
 		db.Find(&answers, "question_id = ?", q.ID)
+
+		// go through each answer, find the user, and put the answer in the []archiveAnswer slice
 		for _, a := range answers {
 			var user userModel
 			db.First(&user, "id = ?", a.UserID)
 			_answers = append(_answers, archiveAnswer{ID: a.ID, QuestionID: int(q.ID), Answer: a.Answer, UserID: a.UserID, UserName: user.Fname})
 		}
+
+		// find the user who posted the question
 		var u userModel
 		db.First(&u, "id = ?", q.UserID)
+
+		// put the question and the []archiveAnswers into an []archiveQuestion slice
 		_questions = append(_questions, archiveQuestion{ID: q.ID, Question: q.Question, UserID: q.UserID, UserName: u.Fname, Answers: _answers})
 	}
 
+	// marshal the data into JSON & return
 	js, err := json.Marshal(_questions)
-
 	return js, err
 }
 

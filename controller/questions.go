@@ -10,23 +10,8 @@ import (
 
 // FetchAllQuestions fetch all the data from the model and handle responding
 func FetchAllQuestions(w http.ResponseWriter, r *http.Request) {
-
 	js, err := model.FetchAllQuestions()
-
-	w.Header().Set("Content-Type", "application/json")
-
-	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong"))
-		}
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // CreateQuestion controller function takes request and parses it, sends to model, sends response or error via JSON.
@@ -39,26 +24,7 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	// Send the []byte b to the model and receive json and error
 	js, err := model.CreateQuestion(b)
 
-	// Set headers before any response is sent
-	w.Header().Set("Content-Type", "application/json")
-
-	// handle the error, if there is one; send appropriate status code
-	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
-		} else if err.Error() == "Bad request" {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("{\"message\": \"Please check your inputs and try again\"}"))
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("{\"message\": \"Sorry, something went wrong.\"}"))
-		}
-	}
-
-	// Send the success response
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchSingleQuestion fetches single question as specified by URL parameter
@@ -70,16 +36,7 @@ func FetchSingleQuestion(w http.ResponseWriter, r *http.Request) {
 	// fetch the question and an error if there is one
 	js, err := model.FetchSingleQuestion(id)
 
-	// Set the header for the outgoing response
-	w.Header().Set("Content-Type", "application/json")
-
-	// Handle the error
-	if err != nil {
-		// handle it
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // UpdateQuestion handles PUT requests to /questions/:id
@@ -95,53 +52,21 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 
 	js, err := model.UpdateQuestion(id, b)
 
-	// Set the header for the outgoing response
-	w.Header().Set("Content-Type", "application/json")
-
-	// Handle the error
-	if err != nil {
-		// handle error
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchQueue gets all open questions in order that they were posted.
 func FetchQueue(w http.ResponseWriter, r *http.Request) {
 	js, err := model.FetchQueue()
 
-	w.Header().Set("Content-Type", "application/json")
-	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong"))
-		}
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
 
 // FetchArchive handles request for deeply nested archive object and responds
 func FetchArchive(w http.ResponseWriter, r *http.Request) {
+
+	// Get the data from the model
 	js, err := model.FetchArchive()
 
-	w.Header().Set("Content-Type", "application/json")
-	if err != nil {
-		if err.Error() == "Not found" {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(js)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Something went wrong"))
-		}
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write(js)
+	handleErrorAndRespond(js, err, w)
 }
