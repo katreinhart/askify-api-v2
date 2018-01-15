@@ -92,10 +92,7 @@ func LoginUser(b []byte) ([]byte, error) {
 	}
 
 	// create transmission friendly user struct
-	var _user transformedUser
-	_user.Email = user.Email
-	_user.ID = dbUser.ID
-	_user.Token = t
+	_user := transformedUser{ID: dbUser.ID, Email: dbUser.Email, FName: dbUser.FName, Cohort: dbUser.Cohort, Token: t}
 
 	// marshal user into JSON and return
 	js, err := json.Marshal(_user)
