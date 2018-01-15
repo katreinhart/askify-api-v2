@@ -29,7 +29,6 @@ func main() {
 		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS", "DELETE"},
 		AllowCredentials: true,
-		Debug:            true,
 	})
 
 	// set up router

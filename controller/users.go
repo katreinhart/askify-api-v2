@@ -13,24 +13,27 @@ import (
 
 // CreateUser handles creation of new users via POST to /users/register
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+
 	// Read in http request body
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	// Create user in model
 	js, err := model.CreateUser(b)
-
 	handleErrorAndRespond(js, err, w)
 }
 
 // LoginUser handles login of existing user via POST to /users/login
 func LoginUser(w http.ResponseWriter, r *http.Request) {
+
+	// Read in http request body
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	// Login user in model
 	js, err := model.LoginUser(b)
-
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -73,6 +76,7 @@ func GetUIDFromBearerToken(r *http.Request) (string, error) {
 
 	// get claims from token
 	claims := tok.Claims.(jwt.MapClaims)
+
 	// parse uid out of claims.
 	uid, ok := claims["uid"].(float64)
 
@@ -80,6 +84,7 @@ func GetUIDFromBearerToken(r *http.Request) (string, error) {
 	if !ok {
 		err = errors.New("Forbidden")
 	}
+
 	// UID parsed from token is of type float64; we need it as a string.
 	struid := strconv.FormatFloat(uid, 'f', -1, 64)
 
