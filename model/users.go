@@ -56,7 +56,7 @@ func CreateUser(b []byte) ([]byte, error) {
 	}
 
 	// create transformed version of user structure, marshal it into JSON and return
-	_user := transformedUser{ID: user.ID, Email: user.Email, Token: t}
+	_user := transformedUser{ID: user.ID, Email: user.Email, FName: user.FName, Cohort: user.Cohort, Token: t}
 	js, err := json.Marshal(_user)
 	return js, err
 }
@@ -116,7 +116,7 @@ func FetchMyInfo(uid string) ([]byte, error) {
 	}
 
 	// Transform user into a listedUser format with ID, email, fname, admin status, cohort
-	_user = listedUser{ID: user.ID, Email: user.Email, Fname: user.Fname, Admin: user.Admin, Cohort: user.Cohort}
+	_user = listedUser{ID: user.ID, Email: user.Email, FName: user.FName, Admin: user.Admin, Cohort: user.Cohort}
 
 	// Marshal into JSON and return
 	js, err := json.Marshal(_user)

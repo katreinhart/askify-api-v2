@@ -19,36 +19,36 @@ var db *gorm.DB
 type (
 	questionModel struct {
 		gorm.Model
-		Question  string `json:"question"`
-		Answered  bool   `json:"answered"`
-		UserID    string `json:"userid"`
-		UserFName string `json:"userfname"`
-		Cohort    string `json:"cohort"`
+		Question string `json:"question"`
+		Answered bool   `json:"answered"`
+		UserID   string `json:"userid"`
+		FName    string `json:"fname"`
+		Cohort   string `json:"cohort"`
 	}
 
 	transformedQuestion struct {
-		ID        uint   `json:"id"`
-		Question  string `json:"question"`
-		Answered  bool   `json:"answered"`
-		UserID    int    `json:"userid"`
-		UserFName string `json:"userfname"`
-		Cohort    string `json:"cohort"`
+		ID       uint   `json:"id"`
+		Question string `json:"question"`
+		Answered bool   `json:"answered"`
+		UserID   int    `json:"userid"`
+		FName    string `json:"fname"`
+		Cohort   string `json:"cohort"`
 	}
 
 	archiveQuestion struct {
 		ID       uint            `json:"id"`
 		Question string          `json:"question"`
 		UserID   int             `json:"userid"`
-		UserName string          `json:"fname"`
+		FName    string          `json:"fname"`
 		Cohort   string          `json:"cohort"`
 		Answers  []archiveAnswer `json:"answers"`
 	}
 
 	answerModelInput struct {
-		Answer    string `json:"answer"`
-		UserID    int    `json:"userid"`
-		UserFName string `json:"userfname"`
-		Cohort    string `json:"cohort"`
+		Answer string `json:"answer"`
+		UserID int    `json:"userid"`
+		FName  string `json:"fname"`
+		Cohort string `json:"cohort"`
 	}
 
 	answerModel struct {
@@ -56,7 +56,7 @@ type (
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
 		UserID     int    `json:"userid"`
-		UserFName  string `json:"userfname"`
+		FName      string `json:"fname"`
 		Cohort     string `json:"cohort"`
 	}
 
@@ -65,7 +65,7 @@ type (
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
 		UserID     int    `json:"userid"`
-		UserFName  string `json:"userfname"`
+		FName      string `json:"fname"`
 		Cohort     string `json:"cohort"`
 	}
 
@@ -74,14 +74,14 @@ type (
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
 		UserID     int    `json:"uid"`
-		UserFName  string `json:"userfname"`
+		FName      string `json:"fname"`
 		Cohort     string `json:"cohort"`
 	}
 
 	userModel struct {
 		gorm.Model
 		Email    string `json:"email"`
-		Fname    string `json:"fname"`
+		FName    string `json:"fname"`
 		Cohort   string `json:"cohort"`
 		Password string `json:"password"`
 		Admin    bool   `json:"admin"`
@@ -90,14 +90,14 @@ type (
 	transformedUser struct {
 		ID     uint   `json:"id"`
 		Email  string `json:"email"`
-		Fname  string `json:"fname"`
+		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
 		Token  string `json:"token"`
 	}
 
 	listedUser struct {
 		ID     uint   `json:"id"`
-		Fname  string `json:"fname"`
+		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
 		Email  string `json:"email"`
 		Admin  bool   `json:"admin"`

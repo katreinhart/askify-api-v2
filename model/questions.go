@@ -25,7 +25,7 @@ func FetchAllQuestions() (js []byte, e error) {
 	// Transform each question into format to be sent back
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, UserFName: item.UserFName, Cohort: item.Cohort})
+		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
 	// Marshal data into json and return
@@ -72,7 +72,7 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 
 	// Transform the question into the response type
 	uid, _ := strconv.Atoi(question.UserID)
-	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: uid, UserFName: question.UserFName, Cohort: question.Cohort}
+	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: uid, FName: question.FName, Cohort: question.Cohort}
 
 	// Marshal question into JS and return
 	js, err := json.Marshal(_question)
@@ -109,7 +109,7 @@ func UpdateQuestion(id string, b []byte) ([]byte, error) {
 	db.Model(&question).Update("answered", updatedQuestion.Answered)
 
 	// Format question for response
-	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered, UserFName: updatedQuestion.UserFName, Cohort: updatedQuestion.Cohort}
+	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered, FName: updatedQuestion.FName, Cohort: updatedQuestion.Cohort}
 
 	// Marshal into JSON and return
 	js, err := json.Marshal(_question)
@@ -135,7 +135,7 @@ func FetchQueue() ([]byte, error) {
 	// Transform data into return format
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, UserFName: item.UserFName, Cohort: item.Cohort})
+		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
 	// Marshal into JSON and return
@@ -170,7 +170,7 @@ func FetchArchive() ([]byte, error) {
 		for _, a := range answers {
 			var user userModel
 			db.First(&user, "id = ?", a.UserID)
-			_answers = append(_answers, archiveAnswer{ID: a.ID, QuestionID: int(q.ID), Answer: a.Answer, UserID: a.UserID, UserFName: user.Fname, Cohort: user.Cohort})
+			_answers = append(_answers, archiveAnswer{ID: a.ID, QuestionID: int(q.ID), Answer: a.Answer, UserID: a.UserID, FName: user.FName, Cohort: user.Cohort})
 		}
 
 		// find the user who posted the question
@@ -179,7 +179,7 @@ func FetchArchive() ([]byte, error) {
 
 		// put the question and the []archiveAnswers into an []archiveQuestion slice
 		uid, _ := strconv.Atoi(q.UserID)
-		_questions = append(_questions, archiveQuestion{ID: q.ID, Question: q.Question, UserID: uid, UserName: u.Fname, Answers: _answers, Cohort: u.Cohort})
+		_questions = append(_questions, archiveQuestion{ID: q.ID, Question: q.Question, UserID: uid, FName: u.FName, Answers: _answers, Cohort: u.Cohort})
 	}
 
 	// marshal the data into JSON & return
@@ -204,7 +204,7 @@ func FetchUserQuestions(uid string) ([]byte, error) {
 	// transform questions into format for sending back to FE
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, UserFName: item.UserFName, Cohort: item.Cohort})
+		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
 	// Marshal into JSON and return
