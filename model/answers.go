@@ -51,19 +51,22 @@ func CreateAnswer(qid int, b []byte) ([]byte, error) {
 
 // FetchSingleAnswer takes the data from the controller and fetches a single answer matching url params.
 func FetchSingleAnswer(qid string, aid string) ([]byte, error) {
+
+	// Declare the data types to be used
 	var answer answerModel
 	var _answer transformedAnswer
 
+	// Conduct the database query
 	db.Where("id = ? AND question_id = ?", aid, qid).First(&answer)
 
+	// Handle not found case
 	if answer.ID == 0 {
 		return []byte("{\"message\": \"Answer not found\"}"), errors.New("Not found")
 	}
 
+	// Prepare answer to be sent; marshal into JSON and return
 	_answer = transformedAnswer{ID: answer.ID, QuestionID: answer.QuestionID, Answer: answer.Answer, UserID: answer.UserID, FName: answer.FName, Cohort: answer.Cohort}
-
 	js, err := json.Marshal(_answer)
-
 	return js, err
 }
 
