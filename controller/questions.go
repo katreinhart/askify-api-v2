@@ -47,10 +47,12 @@ func FetchSingleQuestion(w http.ResponseWriter, r *http.Request) {
 
 // UpdateQuestion handles PUT requests to /questions/:id
 func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
+
 	// get the URL parameter from the http request
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	// parse UID from bearer token
 	uid, err := GetUIDFromBearerToken(r)
 	if err != nil {
 		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)

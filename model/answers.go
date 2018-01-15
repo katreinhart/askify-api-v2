@@ -54,7 +54,7 @@ func FetchSingleAnswer(qid string, aid string) ([]byte, error) {
 	var answer answerModel
 	var _answer transformedAnswer
 
-	db.Find(&answer, "id = ?", aid)
+	db.Where("id = ? AND question_id = ?", aid, qid).First(&answer)
 
 	if answer.ID == 0 {
 		return []byte("{\"message\": \"Answer not found\"}"), errors.New("Not found")
@@ -64,5 +64,44 @@ func FetchSingleAnswer(qid string, aid string) ([]byte, error) {
 
 	js, err := json.Marshal(_answer)
 
+	return js, err
+}
+
+// UpdateAnswer updates the values of the answer in the db.
+func UpdateAnswer(qid string, uid string, aid string, b []byte) ([]byte, error) {
+	// Declare the data types to be used
+	var answer, updatedAnswer answerModel
+	var _answer transformedAnswer
+
+	// Fetch the answer
+	db.First(&answer, "id = ?", aid)
+
+	// Get the associated user (based on bearer token)
+	var user userModel
+	db.First(&user, "id = ?", uid)
+
+	// See if user is allowed to edit this question (either owner or admin)
+	if string(answer.UserID) != uid && user.Admin == false {
+		err := errors.New("Unauthorized")
+		return []byte("{\"message\": \"Not allowed\"}"), err
+	}
+
+	// Unmarshal the JSON from the request body into the updatedAnswer format
+	err := json.Unmarshal(b, &updatedAnswer)
+
+	// Handle JSON marshalling error
+	if err != nil {
+		err := errors.New("Update error")
+		return []byte("{\"message\": \"Error updating the answer\"}"), err
+	}
+
+	// Update the answer in the database
+	db.Model(&answer).Update("answer", updatedAnswer.Answer)
+
+	// Format answer for response
+	_answer = transformedAnswer{ID: updatedAnswer.ID, Answer: updatedAnswer.Answer, FName: updatedAnswer.FName, Cohort: updatedAnswer.Cohort}
+
+	// Marshal into JSON and return
+	js, err := json.Marshal(_answer)
 	return js, err
 }

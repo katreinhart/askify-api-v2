@@ -44,3 +44,25 @@ func FetchSingleAnswer(w http.ResponseWriter, r *http.Request) {
 
 	handleErrorAndRespond(js, err, w)
 }
+
+// UpdateAnswer handles PUT requests to /questions/{id}/answers/{aid}
+func UpdateAnswer(w http.ResponseWriter, r *http.Request) {
+	// get the data from the request body
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(r.Body)
+	b := []byte(buf.String())
+
+	vars := mux.Vars(r)
+	qid := vars["id"]
+	aid := vars["aid"]
+
+	// parse UID from bearer token
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+	}
+
+	js, err := model.UpdateAnswer(qid, uid, aid, b)
+
+	handleErrorAndRespond(js, err, w)
+}
