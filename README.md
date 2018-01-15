@@ -36,13 +36,14 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 
 
 #### Backlog
+* POST to /questions should not require "userid" field - that information should be parsed from token.
+* Does deeply nested archive route return user names? 
+* Implement Delete functionality? 
+
 * ~~Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes.~~
 * ~~Update user registration to take fname and cohort ID~~
 * ~~Implement ```/users/{id}/questions``` GET route to see all users' questions~~
 * ~~Implement ```/archive``` GET route to get all answered questions with nested answers.~~
-* Implement Delete functionality? 
-* POST to /questions should not require "userid" field = that should be parsed from token.
-* Does deeply nested archive route return user names? 
 
 ### Work In Progress
 This is a work in progress as of January 2018.
