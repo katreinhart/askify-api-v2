@@ -57,7 +57,7 @@ func FetchSingleAnswer(qid string, aid string) ([]byte, error) {
 	db.Find(&answer, "id = ?", aid)
 
 	if answer.ID == 0 {
-		return []byte("{\"message\": \"Not found\"}"), errors.New("Answer not found")
+		return []byte("{\"message\": \"Answer not found\"}"), errors.New("Not found")
 	}
 
 	_answer = transformedAnswer{ID: answer.ID, QuestionID: answer.QuestionID, Answer: answer.Answer, UserID: answer.UserID}

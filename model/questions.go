@@ -8,27 +8,32 @@ import (
 // FetchAllQuestions takes no parameters and responds with a JSON of all the questions in the db and an error.
 func FetchAllQuestions() (js []byte, e error) {
 
+	// Declare data structures to hold data
 	var questions []questionModel
 	var _questions []transformedQuestion
 
+	// Retrieve all questions from database
 	db.Find(&questions)
 
+	// If there are no questions, send back a 404
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
-		return []byte(""), err
+		return []byte("{\"message\": \"Questions not found\"}"), err
 	}
 
+	// Transform each question into format to be sent back
 	for _, item := range questions {
 		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: item.UserID})
 	}
 
+	// Marshal data into json and return
 	js, err := json.Marshal(_questions)
-
 	return js, err
 }
 
 // CreateQuestion takes in the request body and responds with JSON success message and an error.
 func CreateQuestion(b []byte) (js []byte, e error) {
+
 	// declare the data type that the data will be put into
 	var question questionModel
 
@@ -37,7 +42,7 @@ func CreateQuestion(b []byte) (js []byte, e error) {
 
 	// Handle error if any
 	if err != nil {
-		return []byte("Something went wrong"), err
+		return []byte("{\"message\": \"Something went wrong.\"}"), err
 	}
 
 	// Save the question to the DB
@@ -49,8 +54,10 @@ func CreateQuestion(b []byte) (js []byte, e error) {
 
 // FetchSingleQuestion takes in an ID and returns a JSON formatted question and an error
 func FetchSingleQuestion(id string) ([]byte, error) {
+
 	// Declare the data type that will hold the data
 	var question questionModel
+
 	// Fetch the question from the DB
 	db.First(&question, id)
 
@@ -63,16 +70,18 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 	// Transform the question into the response type
 	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: question.UserID}
 
+	// Marshal question into JS and return
 	js, err := json.Marshal(_question)
-
 	return js, err
 }
 
 // UpdateQuestion takes in an ID and a byte array, updates the appropriate database row, and returns a JSON formatted response and an error
 func UpdateQuestion(id string, b []byte) ([]byte, error) {
+
 	// Declare the data types to be used
 	var question, updatedQuestion questionModel
 	var _question transformedQuestion
+
 	// Fetch the question in question
 	db.First(&question, id)
 
@@ -84,39 +93,48 @@ func UpdateQuestion(id string, b []byte) ([]byte, error) {
 
 	// Unmarshal the JSON from the request body into the updatedQuestion format
 	err := json.Unmarshal(b, &updatedQuestion)
+
+	// Handle JSON marshalling error
 	if err != nil {
-		// hanlde the error
 		err := errors.New("Update error")
 		return []byte("{\"message\": \"Error updating the question\"}"), err
 	}
 
+	// Update the question and its answered status
 	db.Model(&question).Update("question", updatedQuestion.Question)
 	db.Model(&question).Update("answered", updatedQuestion.Answered)
 
+	// Format question for response
 	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered}
-	js, err := json.Marshal(_question)
 
+	// Marshal into JSON and return
+	js, err := json.Marshal(_question)
 	return js, err
 }
 
 // FetchQueue will return all unanswered questions in the proper order
 func FetchQueue() ([]byte, error) {
+
+	// Data structures to hold the questions
 	var questions []questionModel
 	var _questions []transformedQuestion
 
+	// Database call for unanswered questions, ordered by created_at timestamps
 	db.Order("created_at asc").Find(&questions, "answered = ?", false)
 
+	// Handle no questions returned from DB
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
-		return []byte(""), err
+		return []byte("{\"message\": \"No unanswered questions found.\"}"), err
 	}
 
+	// Transform data into return format
 	for _, item := range questions {
 		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: item.UserID})
 	}
 
+	// Marshal into JSON and return
 	js, err := json.Marshal(_questions)
-
 	return js, err
 }
 
@@ -127,13 +145,12 @@ func FetchArchive() ([]byte, error) {
 
 	// Get all answered questions from the database.
 	// Currently sorting ascending; is this right? 🤷🏼‍♀️
-
 	db.Order("created_at asc").Find(&questions, "answered = ?", true)
 
 	// No questions found? return not found error
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
-		return []byte(""), err
+		return []byte("{\"message\": \"No questions found.\"}"), err
 	}
 
 	// go through each question and put its answers into an []archiveAnswer
@@ -169,18 +186,21 @@ func FetchUserQuestions(uid string) ([]byte, error) {
 	var questions []questionModel
 	var _questions []transformedQuestion
 
+	// Database call for user's questions
 	db.Order("created_at asc").Find(&questions, "user_id = ?", uid)
 
+	// Handle no questions found
 	if len(questions) <= 0 {
 		err := errors.New("Not found")
-		return []byte(""), err
+		return []byte("{\"message\": \"No questions found for user.\"}"), err
 	}
 
+	// transform questions into format for sending back to FE
 	for _, item := range questions {
 		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: item.UserID})
 	}
 
+	// Marshal into JSON and return
 	js, err := json.Marshal(_questions)
-
 	return js, err
 }
