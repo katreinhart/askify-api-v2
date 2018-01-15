@@ -21,7 +21,7 @@ type (
 		gorm.Model
 		Question string `json:"question"`
 		Answered bool   `json:"answered"`
-		UserID   int    `json:"userid"`
+		UserID   string `json:"userid"`
 	}
 
 	transformedQuestion struct {
@@ -89,6 +89,7 @@ type (
 		Admin  bool   `json:"admin"`
 	}
 
+	// CustomClaims for JWT handling
 	CustomClaims struct {
 		UID uint `json:"uid"`
 		Rol bool `json:"rol"`

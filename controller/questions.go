@@ -16,13 +16,19 @@ func FetchAllQuestions(w http.ResponseWriter, r *http.Request) {
 
 // CreateQuestion controller function takes request and parses it, sends to model, sends response or error via JSON.
 func CreateQuestion(w http.ResponseWriter, r *http.Request) {
+
 	// Create a new buffer to read the body, then parse into a []byte
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+	}
+
 	// Send the []byte b to the model and receive json and error
-	js, err := model.CreateQuestion(b)
+	js, err := model.CreateQuestion(b, uid)
 
 	handleErrorAndRespond(js, err, w)
 }

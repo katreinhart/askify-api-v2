@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -104,17 +103,14 @@ func LoginUser(b []byte) ([]byte, error) {
 }
 
 // FetchMyInfo finds the given user in the db and returns info about them
-func FetchMyInfo(uid float64) ([]byte, error) {
+func FetchMyInfo(uid string) ([]byte, error) {
 
 	// Declare data types
 	var user userModel
 	var _user listedUser
 
-	// UID parsed from token is of type float64; we need it as a string.
-	struid := strconv.FormatFloat(uid, 'f', -1, 64)
-
 	// Find the user in the DB
-	db.First(&user, "id = ?", struid)
+	db.First(&user, "id = ?", uid)
 	if user.ID == 0 {
 		return []byte("{\"message\": \"User not found.\"}"), errors.New("Not found")
 	}
