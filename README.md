@@ -31,7 +31,7 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * Routes are ```/register``` and ```/login```
 * Both auth routes require an "email" and "password" field.
 * Auth register route also takes "fname" and "cohort" fields
-* Auth routes return a JWT token.
+* Auth routes return user information and a JWT token.
 * API routes begin with /api/ and are JWT-token protected.
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 
 

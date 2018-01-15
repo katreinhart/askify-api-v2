@@ -80,7 +80,7 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 }
 
 // UpdateQuestion takes in an ID and a byte array, updates the appropriate database row, and returns a JSON formatted response and an error
-func UpdateQuestion(id string, b []byte) ([]byte, error) {
+func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 
 	// Declare the data types to be used
 	var question, updatedQuestion questionModel
@@ -93,6 +93,16 @@ func UpdateQuestion(id string, b []byte) ([]byte, error) {
 	if question.ID == 0 {
 		err := errors.New("Not found")
 		return []byte("{\"message\": \"Question not found\"}"), err
+	}
+
+	// Get the associated user (based on bearer token)
+	var user userModel
+	db.First(&user, "id = ?", uid)
+
+	// See if user is allowed to edit this question (either owner or admin)
+	if question.UserID != uid && user.Admin == false {
+		err := errors.New("Unauthorized")
+		return []byte("{\"message\": \"Not allowed\"}"), err
 	}
 
 	// Unmarshal the JSON from the request body into the updatedQuestion format

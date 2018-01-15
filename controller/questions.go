@@ -51,12 +51,17 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+	}
+
 	// get the body from the request
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.UpdateQuestion(id, b)
+	js, err := model.UpdateQuestion(id, uid, b)
 
 	handleErrorAndRespond(js, err, w)
 }
