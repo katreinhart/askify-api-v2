@@ -17,7 +17,7 @@ func FetchQuestionAnswers(id string) ([]byte, error) {
 	}
 
 	for _, item := range answers {
-		_answers = append(_answers, transformedAnswer{ID: item.ID, QuestionID: item.QuestionID, Answer: item.Answer, UserID: item.UserID})
+		_answers = append(_answers, transformedAnswer{ID: item.ID, QuestionID: item.QuestionID, Answer: item.Answer, UserID: item.UserID, UserFName: item.UserFName, Cohort: item.Cohort})
 	}
 
 	js, err := json.Marshal(_answers)
@@ -34,7 +34,7 @@ func CreateAnswer(qid int, b []byte) ([]byte, error) {
 
 	err := json.Unmarshal(b, &answer)
 
-	_answer = answerModel{QuestionID: qid, Answer: answer.Answer, UserID: answer.UserID}
+	_answer = answerModel{QuestionID: qid, Answer: answer.Answer, UserID: answer.UserID, UserFName: answer.UserFName, Cohort: answer.Cohort}
 
 	if err != nil {
 		return []byte("{\"message\": \"Error saving to database\"}"), err
@@ -60,7 +60,7 @@ func FetchSingleAnswer(qid string, aid string) ([]byte, error) {
 		return []byte("{\"message\": \"Answer not found\"}"), errors.New("Not found")
 	}
 
-	_answer = transformedAnswer{ID: answer.ID, QuestionID: answer.QuestionID, Answer: answer.Answer, UserID: answer.UserID}
+	_answer = transformedAnswer{ID: answer.ID, QuestionID: answer.QuestionID, Answer: answer.Answer, UserID: answer.UserID, UserFName: answer.UserFName, Cohort: answer.Cohort}
 
 	js, err := json.Marshal(_answer)
 
