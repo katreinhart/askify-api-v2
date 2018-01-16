@@ -41,7 +41,7 @@ func CreateAnswer(qid int, b []byte) ([]byte, error) {
 	}
 
 	// find the associated question and mark it answered
-	db.Model(&question).Update("answered", true)
+	db.Model(&question).Where("id = ?", qid).Update("answered", true)
 
 	// save the answer in the DB
 	db.Save(&_answer)
