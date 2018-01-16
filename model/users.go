@@ -112,6 +112,8 @@ func FetchMyInfo(uid string) ([]byte, error) {
 		return []byte("{\"message\": \"User not found.\"}"), errors.New("Not found")
 	}
 
+	fmt.Println("User is", user.FName)
+
 	// Transform user into a listedUser format with ID, email, fname, admin status, cohort
 	_user = listedUser{ID: user.ID, FName: user.FName, Cohort: user.Cohort, Email: user.Email, Admin: user.Admin}
 
