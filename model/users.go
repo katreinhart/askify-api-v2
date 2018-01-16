@@ -113,7 +113,7 @@ func FetchMyInfo(uid string) ([]byte, error) {
 	}
 
 	// Transform user into a listedUser format with ID, email, fname, admin status, cohort
-	_user = listedUser{ID: user.ID, Email: user.Email, FName: user.FName, Admin: user.Admin, Cohort: user.Cohort}
+	_user = listedUser{ID: user.ID, FName: user.FName, Cohort: user.Cohort, Email: user.Email, Admin: user.Admin}
 
 	// Marshal into JSON and return
 	js, err := json.Marshal(_user)
