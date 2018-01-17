@@ -159,8 +159,7 @@ func FetchArchive() ([]byte, error) {
 	var _questions []archiveQuestion
 
 	// Get all answered questions from the database.
-	// Currently sorting ascending; is this right? 🤷🏼‍♀️
-	db.Order("created_at asc").Find(&questions, "answered = ?", true)
+	db.Order("created_at desc").Find(&questions, "answered = ?", true)
 
 	// No questions found? return not found error
 	if len(questions) <= 0 {
