@@ -159,7 +159,7 @@ func FetchArchive() ([]byte, error) {
 	var _questions []archiveQuestion
 
 	// Get all answered questions from the database.
-	db.Order("created_at desc").Find(&questions, "answered = ?", true)
+	db.Limit(50).Order("created_at desc").Find(&questions, "answered = ?", true)
 
 	// No questions found? return not found error
 	if len(questions) <= 0 {
