@@ -30,7 +30,7 @@ func CreateAnswer(qid int, b []byte) ([]byte, error) {
 	var answer answerModelInput
 	var _answer answerModel
 
-	var question questionModel
+	var question QuestionModel
 
 	err := json.Unmarshal(b, &answer)
 
@@ -80,7 +80,7 @@ func UpdateAnswer(qid string, uid string, aid string, b []byte) ([]byte, error) 
 	db.First(&answer, "id = ?", aid)
 
 	// Get the associated user (based on bearer token)
-	var user userModel
+	var user UserModel
 	db.First(&user, "id = ?", uid)
 
 	// See if user is allowed to edit this question (either owner or admin)

@@ -2,6 +2,8 @@ package controller
 
 import (
 	"net/http"
+
+	"github.com/katreinhart/askify-api-v2/model"
 )
 
 func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
@@ -9,7 +11,7 @@ func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
 
 	// handle the error cases
 	if err != nil {
-		if err.Error() == "Not found" {
+		if err == model.ErrorNotFound {
 			w.WriteHeader(http.StatusNotFound)
 		} else if err.Error() == "Error saving to database" {
 			w.WriteHeader(http.StatusInternalServerError)

@@ -10,7 +10,7 @@ import (
 func FetchAllQuestions() (js []byte, e error) {
 
 	// Declare data structures to hold data
-	var questions []questionModel
+	var questions []QuestionModel
 	var _questions []transformedQuestion
 
 	// Retrieve all questions from database
@@ -37,7 +37,7 @@ func FetchAllQuestions() (js []byte, e error) {
 func CreateQuestion(b []byte, uid string) (js []byte, e error) {
 
 	// declare the data type that the data will be put into
-	var question questionModel
+	var question QuestionModel
 
 	// Unmarshal the JSON formatted data b into the questionModel struct
 	err := json.Unmarshal(b, &question)
@@ -59,7 +59,7 @@ func CreateQuestion(b []byte, uid string) (js []byte, e error) {
 func FetchSingleQuestion(id string) ([]byte, error) {
 
 	// Declare the data type that will hold the data
-	var question questionModel
+	var question QuestionModel
 
 	// Fetch the question from the DB
 	db.First(&question, id)
@@ -83,7 +83,7 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 
 	// Declare the data types to be used
-	var question, updatedQuestion questionModel
+	var question, updatedQuestion QuestionModel
 	var _question transformedQuestion
 
 	// Fetch the question in question
@@ -96,7 +96,7 @@ func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 	}
 
 	// Get the associated user (based on bearer token)
-	var user userModel
+	var user UserModel
 	db.First(&user, "id = ?", uid)
 
 	// See if user is allowed to edit this question (either owner or admin)
@@ -130,7 +130,7 @@ func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 func FetchQueue() ([]byte, error) {
 
 	// Data structures to hold the questions
-	var questions []questionModel
+	var questions []QuestionModel
 	var _questions []transformedQuestion
 
 	// Database call for unanswered questions, ordered by created_at timestamps
@@ -155,7 +155,7 @@ func FetchQueue() ([]byte, error) {
 
 // FetchArchive will return a nested object with all answered questions and their answers.
 func FetchArchive() ([]byte, error) {
-	var questions []questionModel
+	var questions []QuestionModel
 	var _questions []archiveQuestion
 
 	// Get all answered questions from the database.
@@ -177,13 +177,13 @@ func FetchArchive() ([]byte, error) {
 
 		// go through each answer, find the user, and put the answer in the []archiveAnswer slice
 		for _, a := range answers {
-			var user userModel
+			var user UserModel
 			db.First(&user, "id = ?", a.UserID)
 			_answers = append(_answers, archiveAnswer{ID: a.ID, QuestionID: int(q.ID), Answer: a.Answer, UserID: a.UserID, FName: user.FName, Cohort: user.Cohort})
 		}
 
 		// find the user who posted the question
-		var u userModel
+		var u UserModel
 		db.First(&u, "id = ?", q.UserID)
 
 		// put the question and the []archiveAnswers into an []archiveQuestion slice
@@ -198,7 +198,7 @@ func FetchArchive() ([]byte, error) {
 
 // FetchUserQuestions returns all questions a user has asked
 func FetchUserQuestions(uid string) ([]byte, error) {
-	var questions []questionModel
+	var questions []QuestionModel
 	var _questions []transformedQuestion
 
 	// Database call for user's questions

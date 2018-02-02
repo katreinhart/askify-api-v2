@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -17,7 +18,8 @@ var db *gorm.DB
 
 // type declarations for the data model
 type (
-	questionModel struct {
+	// QuestionModel is the DB model for asked questions
+	QuestionModel struct {
 		gorm.Model
 		Question string `json:"question"`
 		Answered bool   `json:"answered"`
@@ -78,7 +80,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	userModel struct {
+	UserModel struct {
 		gorm.Model
 		Email    string `json:"email"`
 		FName    string `json:"fname"`
@@ -87,7 +89,7 @@ type (
 		Admin    bool   `json:"admin"`
 	}
 
-	transformedUser struct {
+	TransformedUser struct {
 		ID     uint   `json:"id"`
 		Email  string `json:"email"`
 		FName  string `json:"fname"`
@@ -95,7 +97,7 @@ type (
 		Token  string `json:"token"`
 	}
 
-	listedUser struct {
+	ListedUser struct {
 		ID     uint   `json:"id"`
 		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
@@ -110,6 +112,13 @@ type (
 		jwt.StandardClaims
 	}
 )
+
+// Errors
+var ErrorUserExists = errors.New("User already exists")
+
+var ErrorNotFound = errors.New("Not found")
+
+var ErrorForbidden = errors.New("Forbidden")
 
 // init function runs at setup; connects to database
 func init() {
@@ -129,7 +138,7 @@ func init() {
 		panic("Unable to connect to DB")
 	}
 
-	db.AutoMigrate(&questionModel{})
+	db.AutoMigrate(&QuestionModel{})
 	db.AutoMigrate(&answerModel{})
-	db.AutoMigrate(&userModel{})
+	db.AutoMigrate(&UserModel{})
 }
