@@ -28,7 +28,7 @@ type (
 		Cohort   string `json:"cohort"`
 	}
 
-	transformedQuestion struct {
+	TransformedQuestion struct {
 		ID       uint   `json:"id"`
 		Question string `json:"question"`
 		Answered bool   `json:"answered"`
@@ -119,6 +119,10 @@ var ErrorUserExists = errors.New("User already exists")
 var ErrorNotFound = errors.New("Not found")
 
 var ErrorForbidden = errors.New("Forbidden")
+
+var ErrorBadRequest = errors.New("Bad request")
+
+var ErrorInternalServer = errors.New("Something went wrong")
 
 // init function runs at setup; connects to database
 func init() {

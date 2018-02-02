@@ -2,7 +2,9 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/model"
@@ -10,7 +12,17 @@ import (
 
 // FetchAllQuestions fetch all the data from the model and handle responding
 func FetchAllQuestions(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchAllQuestions()
+	var q []model.TransformedQuestion
+
+	q, err := model.FetchAllQuestions()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(q)
+
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -23,13 +35,36 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	b := []byte(buf.String())
 
 	uid, err := GetUIDFromBearerToken(r)
+
 	if err != nil {
-		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+		handleErrorAndRespond(nil, err, w)
+		return
 	}
 
-	// Send the []byte b to the model and receive json and error
-	js, err := model.CreateQuestion(b, uid)
+	var q model.QuestionModel
+	id, err := strconv.Atoi(uid)
 
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+	}
+	err = json.Unmarshal(b, q)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
+	}
+
+	q.UserID = uid
+
+	var _q model.TransformedQuestion
+	_q, err = model.CreateQuestion(q, id)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
+	}
+
+	js, err := json.Marshal(_q)
 	handleErrorAndRespond(js, err, w)
 }
 

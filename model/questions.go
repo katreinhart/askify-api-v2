@@ -7,52 +7,37 @@ import (
 )
 
 // FetchAllQuestions takes no parameters and responds with a JSON of all the questions in the db and an error.
-func FetchAllQuestions() (js []byte, e error) {
+func FetchAllQuestions() ([]TransformedQuestion, error) {
 
 	// Declare data structures to hold data
 	var questions []QuestionModel
-	var _questions []transformedQuestion
+	var _questions []TransformedQuestion
 
 	// Retrieve all questions from database
 	db.Find(&questions)
 
 	// If there are no questions, send back a 404
 	if len(questions) <= 0 {
-		err := errors.New("Not found")
-		return []byte("{\"message\": \"Questions not found\"}"), err
+		return nil, ErrorNotFound
 	}
 
 	// Transform each question into format to be sent back
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
+		_questions = append(_questions, TransformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
-	// Marshal data into json and return
-	js, err := json.Marshal(_questions)
-	return js, err
+	return _questions, nil
 }
 
 // CreateQuestion takes in the request body and responds with JSON success message and an error.
-func CreateQuestion(b []byte, uid string) (js []byte, e error) {
-
-	// declare the data type that the data will be put into
-	var question QuestionModel
-
-	// Unmarshal the JSON formatted data b into the questionModel struct
-	err := json.Unmarshal(b, &question)
-	question.UserID = uid
-
-	// Handle error if any
-	if err != nil {
-		return []byte("{\"message\": \"Something went wrong.\"}"), err
-	}
+func CreateQuestion(q QuestionModel, id int) (TransformedQuestion, error) {
 
 	// Save the question to the DB
-	db.Save(&question)
+	db.Save(&q)
 
-	// Return a success message (maybe edit later to return the question?)
-	return []byte("{\"message\": \"Question successfully added\"}"), nil
+	_q := TransformedQuestion{Question: q.Question, Answered: q.Answered, UserID: id, FName: q.FName, Cohort: q.Cohort}
+	return _q, nil
 }
 
 // FetchSingleQuestion takes in an ID and returns a JSON formatted question and an error
@@ -72,7 +57,7 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 
 	// Transform the question into the response type
 	uid, _ := strconv.Atoi(question.UserID)
-	_question := transformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: uid, FName: question.FName, Cohort: question.Cohort}
+	_question := TransformedQuestion{ID: question.ID, Question: question.Question, Answered: question.Answered, UserID: uid, FName: question.FName, Cohort: question.Cohort}
 
 	// Marshal question into JS and return
 	js, err := json.Marshal(_question)
@@ -84,7 +69,7 @@ func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 
 	// Declare the data types to be used
 	var question, updatedQuestion QuestionModel
-	var _question transformedQuestion
+	var _question TransformedQuestion
 
 	// Fetch the question in question
 	db.First(&question, id)
@@ -119,7 +104,7 @@ func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
 	db.Model(&question).Update("answered", updatedQuestion.Answered)
 
 	// Format question for response
-	_question = transformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered, FName: updatedQuestion.FName, Cohort: updatedQuestion.Cohort}
+	_question = TransformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered, FName: updatedQuestion.FName, Cohort: updatedQuestion.Cohort}
 
 	// Marshal into JSON and return
 	js, err := json.Marshal(_question)
@@ -131,7 +116,7 @@ func FetchQueue() ([]byte, error) {
 
 	// Data structures to hold the questions
 	var questions []QuestionModel
-	var _questions []transformedQuestion
+	var _questions []TransformedQuestion
 
 	// Database call for unanswered questions, ordered by created_at timestamps
 	db.Order("created_at asc").Find(&questions, "answered = ?", false)
@@ -145,7 +130,7 @@ func FetchQueue() ([]byte, error) {
 	// Transform data into return format
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
+		_questions = append(_questions, TransformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
 	// Marshal into JSON and return
@@ -199,7 +184,7 @@ func FetchArchive() ([]byte, error) {
 // FetchUserQuestions returns all questions a user has asked
 func FetchUserQuestions(uid string) ([]byte, error) {
 	var questions []QuestionModel
-	var _questions []transformedQuestion
+	var _questions []TransformedQuestion
 
 	// Database call for user's questions
 	db.Order("created_at asc").Find(&questions, "user_id = ?", uid)
@@ -213,7 +198,7 @@ func FetchUserQuestions(uid string) ([]byte, error) {
 	// transform questions into format for sending back to FE
 	for _, item := range questions {
 		uid, _ := strconv.Atoi(item.UserID)
-		_questions = append(_questions, transformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
+		_questions = append(_questions, TransformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
 	// Marshal into JSON and return
