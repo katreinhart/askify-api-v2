@@ -74,7 +74,7 @@ func main() {
 	// muxRouter uses Negroni handles the middleware for authorization
 	muxRouter := http.NewServeMux()
 	muxRouter.Handle("/", r)
-	muxRouter.Handle("/api", negroni.New(
+	muxRouter.Handle("/api/", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(api),
 	))
