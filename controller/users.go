@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -39,8 +40,9 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 
 // FetchUserInfo gets the information about the current user (by token) and returns it in JSON format.
 func FetchUserInfo(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Fetch user info")
 	uid, err := GetUIDFromBearerToken(r)
-
+	fmt.Println("Get uid from bearer token ")
 	if err != nil {
 		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token\"}"), err, w)
 		return
@@ -65,8 +67,12 @@ func FetchUserQuestions(w http.ResponseWriter, r *http.Request) {
 
 // GetUIDFromBearerToken does what it says on the tin
 func GetUIDFromBearerToken(r *http.Request) (string, error) {
+	fmt.Println(r.Context())
 	user := r.Context().Value("user")
+	fmt.Println(user)
 	tok := user.(*jwt.Token)
+	fmt.Println("token")
+	fmt.Println(tok)
 	var err error
 
 	// no token present, so this is an unauthorized request.

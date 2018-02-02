@@ -150,5 +150,6 @@ func createAndSignJWT(user userModel) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	secret := []byte(os.Getenv("SECRET"))
 	t, err := token.SignedString(secret)
+	fmt.Println(t)
 	return t, err
 }
