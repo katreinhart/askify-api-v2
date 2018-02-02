@@ -138,9 +138,17 @@ func FetchQueue(w http.ResponseWriter, r *http.Request) {
 
 // FetchArchive handles request for deeply nested archive object and responds
 func FetchArchive(w http.ResponseWriter, r *http.Request) {
+	var archive []model.ArchiveQuestion
 
 	// Get the data from the model
-	js, err := model.FetchArchive()
+	archive, err := model.FetchArchive()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(archive)
 
 	handleErrorAndRespond(js, err, w)
 }

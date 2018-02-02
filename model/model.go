@@ -37,13 +37,13 @@ type (
 		Cohort   string `json:"cohort"`
 	}
 
-	archiveQuestion struct {
+	ArchiveQuestion struct {
 		ID       uint            `json:"id"`
 		Question string          `json:"question"`
 		UserID   int             `json:"userid"`
 		FName    string          `json:"fname"`
 		Cohort   string          `json:"cohort"`
-		Answers  []archiveAnswer `json:"answers"`
+		Answers  []ArchiveAnswer `json:"answers"`
 	}
 
 	AnswerModelInput struct {
@@ -71,7 +71,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	archiveAnswer struct {
+	ArchiveAnswer struct {
 		ID         uint   `json:"id"`
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -113,15 +113,19 @@ type (
 	}
 )
 
-// Errors
+// ErrorUserExists is when the user is already in the database
 var ErrorUserExists = errors.New("User already exists")
 
+// ErrorNotFound handles 404 situations
 var ErrorNotFound = errors.New("Not found")
 
+// ErrorForbidden handles unauthorized stuff
 var ErrorForbidden = errors.New("Forbidden")
 
+// ErrorBadRequest handles when input is malformed
 var ErrorBadRequest = errors.New("Bad request")
 
+// ErrorInternalServer handles 500 errors
 var ErrorInternalServer = errors.New("Something went wrong")
 
 // init function runs at setup; connects to database

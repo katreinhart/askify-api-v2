@@ -95,9 +95,16 @@ func FetchUserQuestions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	var questions []model.TransformedQuestion
 	// fetch the question and an error if there is one
-	js, err := model.FetchUserQuestions(id)
+	questions, err := model.FetchUserQuestions(id)
 
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(questions)
 	handleErrorAndRespond(js, err, w)
 }
 
