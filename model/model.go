@@ -46,14 +46,14 @@ type (
 		Answers  []archiveAnswer `json:"answers"`
 	}
 
-	answerModelInput struct {
+	AnswerModelInput struct {
 		Answer string `json:"answer"`
 		UserID int    `json:"userid"`
 		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
 	}
 
-	answerModel struct {
+	AnswerModel struct {
 		gorm.Model
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -62,7 +62,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	transformedAnswer struct {
+	TransformedAnswer struct {
 		ID         uint   `json:"id"`
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -143,6 +143,6 @@ func init() {
 	}
 
 	db.AutoMigrate(&QuestionModel{})
-	db.AutoMigrate(&answerModel{})
+	db.AutoMigrate(&AnswerModel{})
 	db.AutoMigrate(&UserModel{})
 }

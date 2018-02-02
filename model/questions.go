@@ -106,7 +106,7 @@ func UpdateQuestion(id string, uid string, q QuestionModel) (TransformedQuestion
 }
 
 // FetchQueue will return all unanswered questions in the proper order
-func FetchQueue() ([]byte, error) {
+func FetchQueue() ([]TransformedQuestion, error) {
 
 	// Data structures to hold the questions
 	var questions []QuestionModel
@@ -117,8 +117,7 @@ func FetchQueue() ([]byte, error) {
 
 	// Handle no questions returned from DB
 	if len(questions) <= 0 {
-		err := errors.New("Not found")
-		return []byte("{\"message\": \"No unanswered questions found.\"}"), err
+		return nil, ErrorNotFound
 	}
 
 	// Transform data into return format
@@ -127,9 +126,7 @@ func FetchQueue() ([]byte, error) {
 		_questions = append(_questions, TransformedQuestion{ID: item.ID, Question: item.Question, Answered: item.Answered, UserID: uid, FName: item.FName, Cohort: item.Cohort})
 	}
 
-	// Marshal into JSON and return
-	js, err := json.Marshal(_questions)
-	return js, err
+	return _questions, nil
 }
 
 // FetchArchive will return a nested object with all answered questions and their answers.
@@ -148,7 +145,7 @@ func FetchArchive() ([]byte, error) {
 
 	// go through each question and put its answers into an []archiveAnswer
 	for _, q := range questions {
-		var answers []answerModel
+		var answers []AnswerModel
 		var _answers []archiveAnswer
 
 		// Get answers from the database

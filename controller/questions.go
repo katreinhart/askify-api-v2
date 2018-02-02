@@ -123,8 +123,16 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 
 // FetchQueue gets all open questions in order that they were posted.
 func FetchQueue(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchQueue()
+	var queue []model.TransformedQuestion
 
+	queue, err := model.FetchQueue()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(queue)
 	handleErrorAndRespond(js, err, w)
 }
 
