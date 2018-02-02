@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -46,8 +47,9 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
 	}
-	err = json.Unmarshal(b, q)
+	err = json.Unmarshal(b, &q)
 
 	if err != nil {
 		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
@@ -89,8 +91,9 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 
 	// parse UID from bearer token
 	uid, err := GetUIDFromBearerToken(r)
+
 	if err != nil {
-		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+		handleErrorAndRespond(nil, err, w)
 	}
 
 	// get the body from the request
@@ -98,8 +101,23 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.UpdateQuestion(id, uid, b)
+	var q model.QuestionModel
+	err = json.Unmarshal(b, &q)
 
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	_q, err := model.UpdateQuestion(id, uid, q)
+
+	if err != nil {
+		fmt.Println("error with model update")
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_q)
 	handleErrorAndRespond(js, err, w)
 }
 

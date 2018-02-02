@@ -65,50 +65,44 @@ func FetchSingleQuestion(id string) ([]byte, error) {
 }
 
 // UpdateQuestion takes in an ID and a byte array, updates the appropriate database row, and returns a JSON formatted response and an error
-func UpdateQuestion(id string, uid string, b []byte) ([]byte, error) {
+func UpdateQuestion(id string, uid string, q QuestionModel) (TransformedQuestion, error) {
 
 	// Declare the data types to be used
-	var question, updatedQuestion QuestionModel
-	var _question TransformedQuestion
+	var dbQ QuestionModel
+	var _q TransformedQuestion
 
 	// Fetch the question in question
-	db.First(&question, id)
+	db.First(&dbQ, id)
 
 	// Handle not found error
-	if question.ID == 0 {
-		err := errors.New("Not found")
-		return []byte("{\"message\": \"Question not found\"}"), err
+	if dbQ.ID == 0 {
+		return TransformedQuestion{}, ErrorNotFound
 	}
 
 	// Get the associated user (based on bearer token)
-	var user UserModel
-	db.First(&user, "id = ?", uid)
+	var u UserModel
+	db.First(&u, "id = ?", uid)
 
 	// See if user is allowed to edit this question (either owner or admin)
-	if question.UserID != uid && user.Admin == false {
-		err := errors.New("Unauthorized")
-		return []byte("{\"message\": \"Not allowed\"}"), err
+	if dbQ.UserID != uid && u.Admin == false {
+		return TransformedQuestion{}, ErrorForbidden
 	}
 
-	// Unmarshal the JSON from the request body into the updatedQuestion format
-	err := json.Unmarshal(b, &updatedQuestion)
+	db.Model(&dbQ).Update("question", q.Question)
+	db.Model(&dbQ).Update("userid", uid)
+	db.Model(&dbQ).Update("fname", q.FName)
+	db.Model(&dbQ).Update("cohort", q.Cohort)
 
-	// Handle JSON marshalling error
+	userID, err := strconv.Atoi(uid)
+
 	if err != nil {
-		err := errors.New("Update error")
-		return []byte("{\"message\": \"Error updating the question\"}"), err
+		return TransformedQuestion{}, err
 	}
-
-	// Update the question and its answered status
-	db.Model(&question).Update("question", updatedQuestion.Question)
-	db.Model(&question).Update("answered", updatedQuestion.Answered)
 
 	// Format question for response
-	_question = TransformedQuestion{ID: updatedQuestion.ID, Question: updatedQuestion.Question, Answered: updatedQuestion.Answered, FName: updatedQuestion.FName, Cohort: updatedQuestion.Cohort}
+	_q = TransformedQuestion{ID: dbQ.ID, Question: dbQ.Question, Answered: dbQ.Answered, FName: dbQ.FName, Cohort: dbQ.Cohort, UserID: userID}
 
-	// Marshal into JSON and return
-	js, err := json.Marshal(_question)
-	return js, err
+	return _q, nil
 }
 
 // FetchQueue will return all unanswered questions in the proper order
