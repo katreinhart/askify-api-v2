@@ -26,7 +26,7 @@ func main() {
 	// CORS middleware setup
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization"},
+		AllowedHeaders:   []string{"Accept-Encoding", "Accept-Language", "Authorization", "Content-Type"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "OPTIONS", "DELETE"},
 		AllowCredentials: true,
 	})
