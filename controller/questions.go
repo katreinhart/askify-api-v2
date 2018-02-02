@@ -2,7 +2,10 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/katreinhart/askify-api-v2/model"
@@ -10,7 +13,17 @@ import (
 
 // FetchAllQuestions fetch all the data from the model and handle responding
 func FetchAllQuestions(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchAllQuestions()
+	var q []model.TransformedQuestion
+
+	q, err := model.FetchAllQuestions()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(q)
+
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -23,13 +36,37 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	b := []byte(buf.String())
 
 	uid, err := GetUIDFromBearerToken(r)
+
 	if err != nil {
-		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+		handleErrorAndRespond(nil, err, w)
+		return
 	}
 
-	// Send the []byte b to the model and receive json and error
-	js, err := model.CreateQuestion(b, uid)
+	var q model.QuestionModel
+	id, err := strconv.Atoi(uid)
 
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
+	}
+	err = json.Unmarshal(b, &q)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorBadRequest, w)
+		return
+	}
+
+	q.UserID = uid
+
+	var _q model.TransformedQuestion
+	_q, err = model.CreateQuestion(q, id)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
+		return
+	}
+
+	js, err := json.Marshal(_q)
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -54,8 +91,9 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 
 	// parse UID from bearer token
 	uid, err := GetUIDFromBearerToken(r)
+
 	if err != nil {
-		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token.\"}"), err, w)
+		handleErrorAndRespond(nil, err, w)
 	}
 
 	// get the body from the request
@@ -63,23 +101,54 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	js, err := model.UpdateQuestion(id, uid, b)
+	var q model.QuestionModel
+	err = json.Unmarshal(b, &q)
 
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	_q, err := model.UpdateQuestion(id, uid, q)
+
+	if err != nil {
+		fmt.Println("error with model update")
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_q)
 	handleErrorAndRespond(js, err, w)
 }
 
 // FetchQueue gets all open questions in order that they were posted.
 func FetchQueue(w http.ResponseWriter, r *http.Request) {
-	js, err := model.FetchQueue()
+	var queue []model.TransformedQuestion
 
+	queue, err := model.FetchQueue()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(queue)
 	handleErrorAndRespond(js, err, w)
 }
 
 // FetchArchive handles request for deeply nested archive object and responds
 func FetchArchive(w http.ResponseWriter, r *http.Request) {
+	var archive []model.ArchiveQuestion
 
 	// Get the data from the model
-	js, err := model.FetchArchive()
+	archive, err := model.FetchArchive()
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(archive)
 
 	handleErrorAndRespond(js, err, w)
 }

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -17,7 +18,8 @@ var db *gorm.DB
 
 // type declarations for the data model
 type (
-	questionModel struct {
+	// QuestionModel is the DB model for asked questions
+	QuestionModel struct {
 		gorm.Model
 		Question string `json:"question"`
 		Answered bool   `json:"answered"`
@@ -26,7 +28,7 @@ type (
 		Cohort   string `json:"cohort"`
 	}
 
-	transformedQuestion struct {
+	TransformedQuestion struct {
 		ID       uint   `json:"id"`
 		Question string `json:"question"`
 		Answered bool   `json:"answered"`
@@ -35,23 +37,23 @@ type (
 		Cohort   string `json:"cohort"`
 	}
 
-	archiveQuestion struct {
+	ArchiveQuestion struct {
 		ID       uint            `json:"id"`
 		Question string          `json:"question"`
 		UserID   int             `json:"userid"`
 		FName    string          `json:"fname"`
 		Cohort   string          `json:"cohort"`
-		Answers  []archiveAnswer `json:"answers"`
+		Answers  []ArchiveAnswer `json:"answers"`
 	}
 
-	answerModelInput struct {
+	AnswerModelInput struct {
 		Answer string `json:"answer"`
 		UserID int    `json:"userid"`
 		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
 	}
 
-	answerModel struct {
+	AnswerModel struct {
 		gorm.Model
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -60,7 +62,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	transformedAnswer struct {
+	TransformedAnswer struct {
 		ID         uint   `json:"id"`
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -69,7 +71,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	archiveAnswer struct {
+	ArchiveAnswer struct {
 		ID         uint   `json:"id"`
 		QuestionID int    `json:"questionid"`
 		Answer     string `json:"answer"`
@@ -78,7 +80,7 @@ type (
 		Cohort     string `json:"cohort"`
 	}
 
-	userModel struct {
+	UserModel struct {
 		gorm.Model
 		Email    string `json:"email"`
 		FName    string `json:"fname"`
@@ -87,7 +89,7 @@ type (
 		Admin    bool   `json:"admin"`
 	}
 
-	transformedUser struct {
+	TransformedUser struct {
 		ID     uint   `json:"id"`
 		Email  string `json:"email"`
 		FName  string `json:"fname"`
@@ -95,7 +97,7 @@ type (
 		Token  string `json:"token"`
 	}
 
-	listedUser struct {
+	ListedUser struct {
 		ID     uint   `json:"id"`
 		FName  string `json:"fname"`
 		Cohort string `json:"cohort"`
@@ -110,6 +112,21 @@ type (
 		jwt.StandardClaims
 	}
 )
+
+// ErrorUserExists is when the user is already in the database
+var ErrorUserExists = errors.New("User already exists")
+
+// ErrorNotFound handles 404 situations
+var ErrorNotFound = errors.New("Not found")
+
+// ErrorForbidden handles unauthorized stuff
+var ErrorForbidden = errors.New("Forbidden")
+
+// ErrorBadRequest handles when input is malformed
+var ErrorBadRequest = errors.New("Bad request")
+
+// ErrorInternalServer handles 500 errors
+var ErrorInternalServer = errors.New("Something went wrong")
 
 // init function runs at setup; connects to database
 func init() {
@@ -129,7 +146,7 @@ func init() {
 		panic("Unable to connect to DB")
 	}
 
-	db.AutoMigrate(&questionModel{})
-	db.AutoMigrate(&answerModel{})
-	db.AutoMigrate(&userModel{})
+	db.AutoMigrate(&QuestionModel{})
+	db.AutoMigrate(&AnswerModel{})
+	db.AutoMigrate(&UserModel{})
 }

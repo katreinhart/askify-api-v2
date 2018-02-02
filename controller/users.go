@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -19,8 +20,24 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	var u model.UserModel
+
+	err := json.Unmarshal(b, &u)
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
 	// Create user in model
-	js, err := model.CreateUser(b)
+	_u, err := model.CreateUser(u)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_u)
+
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -32,8 +49,23 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
-	// Login user in model
-	js, err := model.LoginUser(b)
+	var u model.UserModel
+	err := json.Unmarshal(b, &u)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	var _u model.TransformedUser
+	_u, err = model.LoginUser(u)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(_u)
 	handleErrorAndRespond(js, err, w)
 }
 
@@ -42,11 +74,17 @@ func FetchUserInfo(w http.ResponseWriter, r *http.Request) {
 	uid, err := GetUIDFromBearerToken(r)
 
 	if err != nil {
-		handleErrorAndRespond([]byte("{\"message\": \"Error parsing bearer token\"}"), err, w)
+		handleErrorAndRespond(nil, err, w)
 		return
 	}
 	// get the user from the model
-	js, err := model.FetchMyInfo(uid)
+
+	_user, err := model.FetchMyInfo(uid)
+
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+	}
+	js, err := json.Marshal(_user)
 
 	handleErrorAndRespond(js, err, w)
 }
@@ -57,9 +95,16 @@ func FetchUserQuestions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	var questions []model.TransformedQuestion
 	// fetch the question and an error if there is one
-	js, err := model.FetchUserQuestions(id)
+	questions, err := model.FetchUserQuestions(id)
 
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	js, err := json.Marshal(questions)
 	handleErrorAndRespond(js, err, w)
 }
 

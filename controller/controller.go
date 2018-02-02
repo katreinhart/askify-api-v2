@@ -2,6 +2,8 @@ package controller
 
 import (
 	"net/http"
+
+	"github.com/katreinhart/askify-api-v2/model"
 )
 
 func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
@@ -9,22 +11,15 @@ func handleErrorAndRespond(js []byte, err error, w http.ResponseWriter) {
 
 	// handle the error cases
 	if err != nil {
-		if err.Error() == "Not found" {
+		if err == model.ErrorNotFound {
 			w.WriteHeader(http.StatusNotFound)
-		} else if err.Error() == "Error saving to database" {
-			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "Something went wrong" {
-			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "Update error" {
-			w.WriteHeader(http.StatusInternalServerError)
-		} else if err.Error() == "User already exists" {
+		} else if err == model.ErrorUserExists {
 			w.WriteHeader(http.StatusFound)
-		} else if err.Error() == "Unauthorized" {
+		} else if err == model.ErrorForbidden {
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-
 		// in any case, send back the message created in the model
 		w.Write(js)
 		return

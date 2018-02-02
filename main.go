@@ -56,7 +56,7 @@ func main() {
 	api.HandleFunc("/questions/{id}/answers", controller.FetchQuestionAnswers).Methods("GET")
 	api.HandleFunc("/questions/{id}/answers", controller.CreateAnswer).Methods("POST")
 	api.HandleFunc("/questions/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
-	api.HandleFunc("/questions/{id}/answers/{aid}", controller.UpdateAnswer).Methods("GET")
+	api.HandleFunc("/questions/{id}/answers/{aid}", controller.UpdateAnswer).Methods("PUT")
 
 	// u is another subrouter to handle auth routes
 	u := r.PathPrefix("/auth").Subrouter()
@@ -74,7 +74,7 @@ func main() {
 	// muxRouter uses Negroni handles the middleware for authorization
 	muxRouter := http.NewServeMux()
 	muxRouter.Handle("/", r)
-	muxRouter.Handle("/api/", negroni.New(
+	muxRouter.Handle("/api", negroni.New(
 		negroni.HandlerFunc(jwtMiddleware.HandlerWithNext),
 		negroni.Wrap(api),
 	))
