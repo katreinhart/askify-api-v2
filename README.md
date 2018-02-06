@@ -21,7 +21,7 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ```/questions/{id}``` GET, PUT
 * ```/questions/{id}/answers``` GET, POST
 * ```/questions/{id}/answers/{aid}``` GET
-* ```/questions/open``` GET <-- returns all unanswered questions
+* ```/queue``` GET <-- returns all unanswered questions
 * ```/user ``` GET - returns information about the user based on contents of JWT
 * ```/users/{id}/questions``` returns all quetions a user has asked
 * ```/archive``` returns all answered question with nested answers
@@ -36,9 +36,9 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * Use the JWT token returned from register or login as an authorization bearer token to access these routes. 
 
 #### Backlog
-* Does deeply nested archive route return user names? 
-* Implement Delete functionality? 
 
+* Implement Delete functionality? 
+* ~~Does deeply nested archive route return user names?~~  
 * ~~Use ```https://github.com/auth0/go-jwt-middleware``` go-jwt-middleware to protect routes.~~
 * ~~Update user registration to take fname and cohort ID~~
 * ~~Implement ```/users/{id}/questions``` GET route to see all users' questions~~
