@@ -46,5 +46,3 @@ This API is my independent study project for WDI Q4 and is implemented in Go usi
 * ~~POST to /questions should not require "userid" field - that information should be parsed from token.~~
 * ~~Ensure update permissions only to admins and user who owns question/answer~~
 
-### Work In Progress
-This is a work in progress as of January 2018.
