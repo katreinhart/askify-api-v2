@@ -133,12 +133,15 @@ func FetchQueue(uid string) ([]TransformedQuestion, error) {
 }
 
 // FetchArchive will return a nested object with all answered questions and their answers.
-func FetchArchive() ([]ArchiveQuestion, error) {
+func FetchArchive(uid string) ([]ArchiveQuestion, error) {
 	var questions []QuestionModel
 	var _questions []ArchiveQuestion
 
+	var user UserModel
+	db.Find(&user, "id = ?", uid)
+
 	// Get all answered questions from the database.
-	db.Limit(50).Order("created_at desc").Find(&questions, "answered = ?", true)
+	db.Limit(50).Order("created_at desc").Find(&questions, "answered = ? AND cohort = ?", true, user.Cohort)
 
 	// No questions found? return not found error
 	if len(questions) <= 0 {

@@ -146,8 +146,14 @@ func FetchQueue(w http.ResponseWriter, r *http.Request) {
 func FetchArchive(w http.ResponseWriter, r *http.Request) {
 	var archive []model.ArchiveQuestion
 
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
 	// Get the data from the model
-	archive, err := model.FetchArchive()
+	archive, err = model.FetchArchive(uid)
 
 	if err != nil {
 		handleErrorAndRespond(nil, err, w)
