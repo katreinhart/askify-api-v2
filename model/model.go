@@ -105,6 +105,11 @@ type (
 		Admin  bool   `json:"admin"`
 	}
 
+	Cohort struct {
+		gorm.Model
+		Name string `json:"cohort"`
+	}
+
 	// CustomClaims for JWT handling
 	CustomClaims struct {
 		UID uint `json:"uid"`
@@ -149,4 +154,5 @@ func init() {
 	db.AutoMigrate(&QuestionModel{})
 	db.AutoMigrate(&AnswerModel{})
 	db.AutoMigrate(&UserModel{})
+	db.AutoMigrate(&Cohort{})
 }

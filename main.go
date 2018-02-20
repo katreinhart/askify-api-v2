@@ -58,6 +58,10 @@ func main() {
 	api.HandleFunc("/questions/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 	api.HandleFunc("/questions/{id}/answers/{aid}", controller.UpdateAnswer).Methods("PUT")
 
+	// cohort routes for fetching & adding to list of active cohorts
+	api.HandleFunc("/cohorts", controller.FetchCohortList).Methods("GET")
+	api.HandleFunc("/cohorts", controller.AddCohort).Methods("POST")
+
 	// u is another subrouter to handle auth routes
 	u := r.PathPrefix("/auth").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
