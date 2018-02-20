@@ -106,14 +106,17 @@ func UpdateQuestion(id string, uid string, q QuestionModel) (TransformedQuestion
 }
 
 // FetchQueue will return all unanswered questions in the proper order
-func FetchQueue() ([]TransformedQuestion, error) {
+func FetchQueue(uid string) ([]TransformedQuestion, error) {
 
 	// Data structures to hold the questions
 	var questions []QuestionModel
 	var _questions []TransformedQuestion
 
+	var user UserModel
+	db.Find(&user, "id = ?", uid)
+
 	// Database call for unanswered questions, ordered by created_at timestamps
-	db.Order("created_at asc").Find(&questions, "answered = ?", false)
+	db.Order("created_at asc").Find(&questions, "answered = ? AND cohort = ?", false, user.Cohort)
 
 	// Handle no questions returned from DB
 	if len(questions) <= 0 {

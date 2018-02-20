@@ -125,7 +125,13 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 func FetchQueue(w http.ResponseWriter, r *http.Request) {
 	var queue []model.TransformedQuestion
 
-	queue, err := model.FetchQueue()
+	uid, err := GetUIDFromBearerToken(r)
+	if err != nil {
+		handleErrorAndRespond(nil, err, w)
+		return
+	}
+
+	queue, err = model.FetchQueue(uid)
 
 	if err != nil {
 		handleErrorAndRespond(nil, err, w)
