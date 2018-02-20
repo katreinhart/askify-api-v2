@@ -24,16 +24,28 @@ func AddCohort(w http.ResponseWriter, r *http.Request) {
 	buf.ReadFrom(r.Body)
 	b := []byte(buf.String())
 
+	uid, err := GetUIDFromBearerToken(r)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
+		return
+	}
+
 	var newCohort model.Cohort
 
-	err := json.Unmarshal(b, &newCohort)
+	err = json.Unmarshal(b, &newCohort)
 
 	if err != nil {
 		handleErrorAndRespond(nil, model.ErrorInternalServer, w)
 		return
 	}
 
-	c, err := model.AddCohort(newCohort)
+	c, err := model.AddCohort(newCohort, uid)
+
+	if err != nil {
+		handleErrorAndRespond(nil, model.ErrorForbidden, w)
+		return
+	}
 
 	js, err := json.Marshal(c)
 

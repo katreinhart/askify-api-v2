@@ -58,14 +58,16 @@ func main() {
 	api.HandleFunc("/questions/{id}/answers/{aid}", controller.FetchSingleAnswer).Methods("GET")
 	api.HandleFunc("/questions/{id}/answers/{aid}", controller.UpdateAnswer).Methods("PUT")
 
-	// cohort routes for fetching & adding to list of active cohorts
-	api.HandleFunc("/cohorts", controller.FetchCohortList).Methods("GET")
+	// handle update cohorts
 	api.HandleFunc("/cohorts", controller.AddCohort).Methods("POST")
 
 	// u is another subrouter to handle auth routes
 	u := r.PathPrefix("/auth").Subrouter()
 	u.HandleFunc("/register", controller.CreateUser).Methods("POST")
 	u.HandleFunc("/login", controller.LoginUser).Methods("POST")
+
+	// cohort routes for fetching & adding to list of active cohorts
+	u.HandleFunc("/cohorts", controller.FetchCohortList).Methods("GET")
 
 	// JWT Middleware handles authorization configuration
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
